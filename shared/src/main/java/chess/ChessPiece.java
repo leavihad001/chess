@@ -55,25 +55,170 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece piece = board.getPiece(myPosition);
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        if (getPieceType() == PieceType.BISHOP) {
+            return bishopMoves(board, myPosition);
+        } else if (getPieceType() == PieceType.ROOK) {
+            return rookMoves(board, myPosition);
+        } else if (getPieceType() == PieceType.QUEEN) {
+            return queenMoves(board, myPosition);
+        } else if (getPieceType() == PieceType.KING) {
+            return kingMoves(board, myPosition);
+        } else if (getPieceType() == PieceType.KNIGHT) {
+            return knightMoves(board, myPosition);
+        } else if (getPieceType() == PieceType.PAWN) {
+            return pawnMoves(board, myPosition);
         }
-        return List.of();
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        int [][] directions = { {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+        int[][] posDirections = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-        int rowOffset = direction[0];
-        int colOffset = 
+        for (int[] direction : posDirections) {
 
-        int currentRow = myPosition.getRow() + rowOffset;
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
 
-        while (currentRow >= 1)
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
 
+            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                    //can't go any further
+                    break;
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                    //Keep moving
+                    currentRow += rowChange;
+                    currentCol += colChange;
+                }
+
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}};
+
+        for (int[] direction : posDirections) {
+
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
+
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
+
+            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                    //can't go any further
+                    break;
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                    //Keep moving
+                    currentRow += rowChange;
+                    currentCol += colChange;
+                }
+
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
+        for (int[] direction : posDirections) {
+
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
+
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
+
+            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                    //can't go any further
+                    break;
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                    //Keep moving
+                    currentRow += rowChange;
+                    currentCol += colChange;
+                }
+
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
+        for (int[] direction : posDirections) {
+
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
+
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
+
+            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                    //can't go any further
+                    break;
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                    //Keep moving
+                    currentRow += rowChange;
+                    currentCol += colChange;
+                }
+
+            }
+        }
         return moves;
     }
 
