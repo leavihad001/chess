@@ -42,8 +42,33 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
-        //
+        squares = new ChessPiece[8][8];
+
+        placeKeyPieces(8, ChessGame.TeamColor.BLACK);
+        placePawnPieces(7, ChessGame.TeamColor.BLACK);
+        placePawnPieces(2, ChessGame.TeamColor.WHITE);
+        placeKeyPieces(1, ChessGame.TeamColor.WHITE);
+    }
+
+    private void placeKeyPieces(int row, ChessGame.TeamColor color){
+        //Order R, Kn, B, Q, K, B, Kn, R (Same on both sides because placing from the same perspective)
+
+        ChessPiece.PieceType[] nextPiece = {
+            ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+            ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN,
+            ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP,
+            ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK
+        };
+
+        for (int col = 1; col <= 8; col++) {
+            addPiece(new ChessPosition(row, col), new ChessPiece(color, nextPiece[col-1]));
+        }
+    }
+
+    private void placePawnPieces(int row, ChessGame.TeamColor color){
+        for (int col = 1; col <= 8; col++) {
+            addPiece(new ChessPosition(row, col), new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
     }
 
     @Override
