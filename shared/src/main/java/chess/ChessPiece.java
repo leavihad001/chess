@@ -248,30 +248,56 @@ public class ChessPiece {
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         //Take color and current position into account
-        if (getTeamColor() == ChessGame.TeamColor.WHITE) {
-            int startingRow = 2;
-            int promotingRow = 8;
-            int penultimateRow = 7;
-            int movingDirection = 1; //positive being up
-        } else {
-            int startingRow = 7;
-            int promotingRow = 1;
-            int penultimateRow = 2;
-            int movingDirection = -1; //negative being down
-        }
+        int startingRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        //int promotingRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
+        int penultimateRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 7 : 2;
+        int movingDirection = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1; //positive being up
 
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 
         //Single move
-
-        //Double move?
-
-        //Capture? (2)
+        ChessPosition nextPosition = new ChessPosition(row, col + movingDirection);
+        ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+        if (pieceAtPosition == null) {
+            //square open
+            moves.add(new ChessMove(myPosition, nextPosition, null));
+        }
 
         //Promotion (Queen, Rook, Bishop, Knight) (if at penultimate and no enemy blocking)
+        if (row == penultimateRow && pieceAtPosition == null) {
+            moves.add(new ChessMove(myPosition, nextPosition, PieceType.QUEEN));
+            moves.add(new ChessMove(myPosition, nextPosition, PieceType.ROOK));
+            moves.add(new ChessMove(myPosition, nextPosition, PieceType.BISHOP));
+            moves.add(new ChessMove(myPosition, nextPosition, PieceType.KNIGHT));
+        }
 
+        //Double move
+        if (row == startingRow){
+            nextPosition = new ChessPosition(row, col + (2*movingDirection));
+            pieceAtPosition = board.getPiece(nextPosition);
+            if (pieceAtPosition == null) {
+                //square open
+                moves.add(new ChessMove(myPosition, nextPosition, null));
+            }
+        }
 
+        //Capture? (2)
+        ChessPosition leftCaptPosition = new ChessPosition(row - 1 , col + movingDirection);
+        ChessPosition rightCaptPosition = new ChessPosition(row + 1 , col + movingDirection);
+
+        //left
+        pieceAtPosition = board.getPiece(leftCaptPosition);
+        if (pieceAtPosition != null) {
+            moves.add(new ChessMove(myPosition, leftCaptPosition, null));
+        }
+
+        //right
+        pieceAtPosition = board.getPiece(rightCaptPosition);
+        if (pieceAtPosition != null) {
+            moves.add(new ChessMove(myPosition, rightCaptPosition, null));
+        }
+        
         return moves;
     }
 
