@@ -247,35 +247,31 @@ public class ChessPiece {
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-
-        //Still just a copy of king moves, need to adjust for color and enemy considerations
-
-        int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
-
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            if (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                }
-            }
+        //Take color and current position into account
+        if (getTeamColor() == ChessGame.TeamColor.WHITE) {
+            int startingRow = 2;
+            int promotingRow = 8;
+            int penultimateRow = 7;
+            int movingDirection = 1; //positive being up
+        } else {
+            int startingRow = 7;
+            int promotingRow = 1;
+            int penultimateRow = 2;
+            int movingDirection = -1; //negative being down
         }
+
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        //Single move
+
+        //Double move?
+
+        //Capture? (2)
+
+        //Promotion (Queen, Rook, Bishop, Knight) (if at penultimate and no enemy blocking)
+
+
         return moves;
     }
 
