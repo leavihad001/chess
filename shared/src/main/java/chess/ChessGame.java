@@ -75,10 +75,35 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         //Steps:
-        //Find current team king (position)
-        //Get all opposing team moves
-        //See if any of the team moves match the king's position (capture-able)
+        ChessPosition currentKingPosition = null;
 
+        //Find current team king (position)
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition currentSquare = new ChessPosition(row, col);
+                ChessPiece kingSearch = board.getPiece(currentSquare);
+
+                if (kingSearch.getTeamColor() == teamColor && kingSearch.getPieceType() == ChessPiece.PieceType.KING) {
+                    currentKingPosition = currentSquare;
+                }
+            }
+        }
+
+        //Get all opposing team moves
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition currentSquare = new ChessPosition(row, col);
+                ChessPiece currentPiece = board.getPiece(currentSquare);
+
+                if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
+                    for (ChessMove move : currentEnemyMoves) {
+                        if (move.getEndPosition() == currentKingPosition) {return true;}
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
