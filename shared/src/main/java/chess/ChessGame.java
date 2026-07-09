@@ -173,8 +173,19 @@ public class ChessGame {
             return false;
         }
 
-        //To do:
-        //Check every piece for any valid moves
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition currentSquare = new ChessPosition(row, col);
+                ChessPiece currentPiece = board.getPiece(currentSquare);
+
+                if (currentPiece != null && currentPiece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> ourMoves = validMoves(currentSquare);
+
+                    if (!ourMoves.isEmpty()) {return false;}
+                }
+            }
+        }
+        return true;
     }
 
     /**
