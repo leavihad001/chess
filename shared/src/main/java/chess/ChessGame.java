@@ -64,9 +64,11 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         for (ChessMove moves : allMoves) {
+            ChessPiece pieceCapture = board.getPiece(moves.getEndPosition());
+
             //add a fake piece (make the move)
             board.addPiece(moves.getEndPosition(), currentPiece);
-            board.addPiece(moves.getEndPosition(), null);
+            board.addPiece(moves.getStartPosition(), null);
 
             //check the validity
             if (!isInCheck(currentPiece.getTeamColor())) {
@@ -76,7 +78,7 @@ public class ChessGame {
 
             //putting stuff back where it was
             board.addPiece(moves.getStartPosition(), currentPiece);
-            board.addPiece(moves.getStartPosition(), null);
+            board.addPiece(moves.getEndPosition(), pieceCapture);
         }
 
         return validMoves;
@@ -89,7 +91,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
