@@ -64,11 +64,19 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         for (ChessMove moves : allMoves) {
+            //add a fake piece (make the move)
+            board.addPiece(moves.getEndPosition(), currentPiece);
+            board.addPiece(moves.getEndPosition(), null);
 
-
-
-
+            //check the validity
+            if (!isInCheck(currentPiece.getTeamColor())) {
+                validMoves.add(moves);
             }
+            //add to validMoves if good
+
+            //putting stuff back where it was
+            board.addPiece(moves.getStartPosition(), currentPiece);
+            board.addPiece(moves.getStartPosition(), null);
         }
 
         return validMoves;
@@ -100,7 +108,7 @@ public class ChessGame {
                 ChessPosition currentSquare = new ChessPosition(row, col);
                 ChessPiece kingSearch = board.getPiece(currentSquare);
 
-                if (kingSearch.getTeamColor() == teamColor && kingSearch.getPieceType() == ChessPiece.PieceType.KING) {
+                if (kingSearch != null && kingSearch.getTeamColor() == teamColor && kingSearch.getPieceType() == ChessPiece.PieceType.KING) {
                     currentKingPosition = currentSquare;
                 }
             }
