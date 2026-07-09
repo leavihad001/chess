@@ -186,7 +186,7 @@ public class ChessGame {
 
                 board.addPiece(capturePos, pawn);
                 board.addPiece(startPosition, null);
-                board.addPiece(lastMove.getEndPosition(), null); // Remove enemy pawn temporarily
+                board.addPiece(lastMove.getEndPosition(), null);
 
                 if (!isInCheck(pawn.getTeamColor())) {
                     validMoves.add(new ChessMove(startPosition, capturePos, null));
@@ -200,6 +200,8 @@ public class ChessGame {
     }
 
     private void castlingMoves(ChessPosition startPosition, ChessPiece king, Collection<ChessMove> validMoves) {
+        if (startPosition.getColumn() != 5) return;
+
         if (isInCheck(king.getTeamColor())) return;
 
         int row = startPosition.getRow();
@@ -213,22 +215,21 @@ public class ChessGame {
 
         // Kingside
         if (!ksRookMoved && board.getPiece(new ChessPosition(row, 6)) == null && board.getPiece(new ChessPosition(row, 7)) == null) {
-            if (isSafeSquare(row, 6, king) && isSafeSquare(row, 7, king)) {
+            if (isSafeSquare(row, 6, startPosition, king) && isSafeSquare(row, 7, startPosition, king)) {
                 validMoves.add(new ChessMove(startPosition, new ChessPosition(row, 7), null));
             }
         }
 
         // Queenside
         if (!qsRookMoved && board.getPiece(new ChessPosition(row, 2)) == null && board.getPiece(new ChessPosition(row, 3)) == null && board.getPiece(new ChessPosition(row, 4)) == null) {
-            if (isSafeSquare(row, 3, king) && isSafeSquare(row, 4, king)) {
+            if (isSafeSquare(row, 3, startPosition, king) && isSafeSquare(row, 4, startPosition, king)) {
                 validMoves.add(new ChessMove(startPosition, new ChessPosition(row, 3), null));
             }
         }
     }
 
-    private boolean isSafeSquare(int row, int col, ChessPiece king) {
+    private boolean isSafeSquare(int row, int col, ChessPosition start, ChessPiece king) {
         ChessPosition target = new ChessPosition(row, col);
-        ChessPosition start = new ChessPosition(row, 5); // King's start
 
         board.addPiece(target, king);
         board.addPiece(start, null);
