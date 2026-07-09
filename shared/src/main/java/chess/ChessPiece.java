@@ -248,7 +248,6 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         //Take color and current position into account
         int startingRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
-        //int promotingRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
         int penultimateRow = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 7 : 2;
         int movingDirection = (getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1; //positive being up
 
