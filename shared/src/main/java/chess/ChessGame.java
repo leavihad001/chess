@@ -60,6 +60,7 @@ public class ChessGame {
         if (currentPiece == null) {
             return null;
         }
+
         Collection<ChessMove> allMoves = currentPiece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
 
@@ -107,7 +108,13 @@ public class ChessGame {
         }
 
         board.addPiece(move.getStartPosition(), null);
-        board.addPiece(move.getEndPosition(), currentPiece);
+
+        if (move.getPromotionPiece() != null) {
+            board.addPiece(move.getEndPosition(), new ChessPiece(currentPiece.getTeamColor(),move.getPromotionPiece()));
+        } else {
+            board.addPiece(move.getEndPosition(), currentPiece);
+        }
+
 
         if (currentTeamTurn == TeamColor.WHITE) {
             currentTeamTurn = TeamColor.BLACK;
@@ -147,7 +154,7 @@ public class ChessGame {
                 if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
                     for (ChessMove move : currentEnemyMoves) {
-                        if (move.getEndPosition() == currentKingPosition) {return true;}
+                        if (move.getEndPosition().equals(currentKingPosition)) {return true;}
                     }
                 }
             }
@@ -162,7 +169,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        //To do:
+        //Check every piece for any valid moves
     }
 
     /**
