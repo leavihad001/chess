@@ -9,7 +9,7 @@ public class MemoryUserDAO implements UserDAO {
         users.put(userData.username(), userData);
     }
 
-    public UserData getUserData(String username) throws DataAccessException {
+    public UserData getUser(String username) throws DataAccessException {
         return users.get(username);
     }
 
