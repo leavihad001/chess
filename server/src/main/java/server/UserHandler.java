@@ -19,57 +19,60 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    public Object register(Context ctx) {
+    public void register(Context ctx) {
         try {
             RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
             RegisterResult result = userService.register(request);
-            
+
             ctx.status(200);
-            return gson.toJson(result);
+            ctx.result(gson.toJson(result));
 
         } catch (BadRequestException e) {
             ctx.status(400);
-            return "{ \"message\": \"Error: bad request\" }";
+            ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (AlreadyTakenException e) {
             ctx.status(403);
-            return "{ \"message\": \"Error: already taken\" }";
+            ctx.result("{ \"message\": \"Error: already taken\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 
-    public Object login(Context ctx) {
+    public void login(Context ctx) {
         try {
             LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
 
             LoginResult result = userService.login(request);
 
             ctx.status(200);
-            return gson.toJson(result);
+            ctx.result(gson.toJson(result));
 
+        } catch (BadRequestException e) { // Catch the new 400 error (see Fix 2)
+            ctx.status(400);
+            ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (UnauthorizedException e) {
             ctx.status(401); // Unauthorized
-            return "{ \"message\": \"Error: unauthorized\" }";
+            ctx.result("{ \"message\": \"Error: unauthorized\" }");
         } catch (DataAccessException e) {
             ctx.status(500); // Unknown Errors
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 
-    public Object logout(Context ctx) {
+    public void logout(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
             userService.logout(authToken);
 
             ctx.status(200);
-            return "{}";
+            ctx.result("{}");
         } catch (UnauthorizedException e) {
             ctx.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            ctx.result("{ \"message\": \"Error: unauthorized\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 }

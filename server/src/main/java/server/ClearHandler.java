@@ -8,15 +8,15 @@ public class ClearHandler {
     public ClearHandler(ClearService clearService) {
         this.clearService = clearService;
     }
-    
-    public Object clear(io.javalin.http.Context ctx) {
+
+    public void clear(io.javalin.http.Context ctx) {
         try {
             clearService.clear();
             ctx.status(200);
-            return "{}";
+            ctx.result("{}");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 }

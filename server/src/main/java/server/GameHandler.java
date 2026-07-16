@@ -13,25 +13,25 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
-    public Object listGames(Context ctx) {
+    public void listGames(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
 
             ListGamesResult result = gameService.listGames(authToken);
 
             ctx.status(200);
-            return gson.toJson(result);
+            ctx.result(gson.toJson(result));
 
         } catch (UnauthorizedException e) {
             ctx.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            ctx.result("{ \"message\": \"Error: unauthorized\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 
-    public Object createGame(Context ctx) {
+    public void createGame(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
 
@@ -40,43 +40,43 @@ public class GameHandler {
             CreateGameResult result = gameService.createGame(authToken, request);
 
             ctx.status(200);
-            return gson.toJson(result);
+            ctx.result(gson.toJson(result));
 
         } catch (BadRequestException e) {
             ctx.status(400);
-            return "{ \"message\": \"Error: bad request\" }";
+            ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (UnauthorizedException e) {
             ctx.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            ctx.result("{ \"message\": \"Error: unauthorized\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 
-    public Object joinGame(Context ctx) {
+    public void joinGame(Context ctx) {
         try {
             String authToken = ctx.header("authorization");
 
             JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
 
             gameService.joinGame(authToken, request);
-            
+
             ctx.status(200);
-            return "{}";
+            ctx.result("{}");
 
         } catch (BadRequestException e) {
             ctx.status(400);
-            return "{ \"message\": \"Error: bad request\" }";
+            ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (UnauthorizedException e) {
             ctx.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            ctx.result("{ \"message\": \"Error: unauthorized\" }");
         } catch (AlreadyTakenException e) {
             ctx.status(403);
-            return "{ \"message\": \"Error: already taken\" }";
+            ctx.result("{ \"message\": \"Error: already taken\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
-            return "{ \"message\": \"Error: " + e.getMessage() + "\" }";
+            ctx.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
         }
     }
 }
