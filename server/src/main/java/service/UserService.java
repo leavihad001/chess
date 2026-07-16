@@ -1,19 +1,16 @@
-/*
 package service;
-
-import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import model.UserData;
+import dataaccess.UserDAO;
 import model.AuthData;
+import model.UserData;
 import java.util.UUID;
 
-public class RegisterService {
-
+public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
-    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
+    public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }
@@ -37,4 +34,26 @@ public class RegisterService {
 
         return new RegisterResult(request.username(), authToken);
     }
-}*/
+
+    public LoginResult login(LoginRequest request) throws UnauthorizedException, DataAccessException {
+        UserData user = userDAO.getUser(request.username());
+
+        if (user == null || !user.password().equals(request.password())) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+
+        String authToken = UUID.randomUUID().toString();
+        authDAO.createAuth(new AuthData(authToken, request.username()));
+
+        return new LoginResult(user.username(), authToken);
+    }
+
+    public void logout(String authToken) throws UnauthorizedException, DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+
+        if (authData == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        authDAO.deleteAuth(authToken);
+    }
+}
