@@ -288,11 +288,20 @@ public class ChessGame {
                 ChessPosition currentSquare = new ChessPosition(row, col);
                 ChessPiece currentPiece = board.getPiece(currentSquare);
 
-                if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
-                    for (ChessMove move : currentEnemyMoves) {
-                        if (move.getEndPosition().equals(currentKingPosition)) {return true;}
-                    }
+                if (foundKing(teamColor, currentPiece, currentSquare, currentKingPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean foundKing(TeamColor teamColor, ChessPiece currentPiece, ChessPosition currentSquare, ChessPosition currentKingPosition) {
+        if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
+            Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
+            for (ChessMove move : currentEnemyMoves) {
+                if (move.getEndPosition().equals(currentKingPosition)) {
+                    return true;
                 }
             }
         }
