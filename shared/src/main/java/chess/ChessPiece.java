@@ -74,36 +74,7 @@ public class ChessPiece {
 
         int[][] posDirections = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                    //can't go any further
-                    break;
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                    //Keep moving
-                    currentRow += rowChange;
-                    currentCol += colChange;
-                }
-            }
-        }
-        return moves;
+        return slideMoveSearch(board, myPosition, moves, posDirections);
     }
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
@@ -111,36 +82,7 @@ public class ChessPiece {
 
         int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}};
 
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                    //can't go any further
-                    break;
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                    //Keep moving
-                    currentRow += rowChange;
-                    currentCol += colChange;
-                }
-            }
-        }
-        return moves;
+        return slideMoveSearch(board, myPosition, moves, posDirections);
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
@@ -148,36 +90,7 @@ public class ChessPiece {
 
         int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                    //can't go any further
-                    break;
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                    //Keep moving
-                    currentRow += rowChange;
-                    currentCol += colChange;
-                }
-            }
-        }
-        return moves;
+        return slideMoveSearch(board, myPosition, moves, posDirections);
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
@@ -185,31 +98,7 @@ public class ChessPiece {
 
         int[][] posDirections = {{0, 1}, {-1, 0}, {1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            if (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                }
-            }
-        }
-        return moves;
+        return stepMoveSearch(board, myPosition, moves, posDirections);
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
@@ -217,31 +106,7 @@ public class ChessPiece {
 
         int[][] posDirections = {{2, 1}, {-2, 1}, {2, -1}, {-2, -1}, {1, 2}, {-1, 2}, {1, -2}, {-1, -2}};
 
-        for (int[] direction : posDirections) {
-
-            int rowChange = direction[0]; //the first number
-            int colChange = direction[1]; //the second number
-
-            int currentRow = myPosition.getRow() + rowChange;
-            int currentCol = myPosition.getColumn() + colChange;
-
-            if (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
-                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
-                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
-
-                if (pieceAtPosition != null) {
-                    //found something
-                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
-                        //enemy check
-                        moves.add(new ChessMove(myPosition, nextPosition, null));
-                    }
-                } else {
-                    //add possible move to list
-                    moves.add(new ChessMove(myPosition, nextPosition, null));
-                }
-            }
-        }
-        return moves;
+        return stepMoveSearch(board, myPosition, moves, posDirections);
     }
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
@@ -297,6 +162,67 @@ public class ChessPiece {
             }
         }
 
+        return moves;
+    }
+
+    private Collection<ChessMove> slideMoveSearch(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int[][] posDirections) {
+        for (int[] direction : posDirections) {
+
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
+
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
+
+            while (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                    //can't go any further
+                    break;
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                    //Keep moving
+                    currentRow += rowChange;
+                    currentCol += colChange;
+                }
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> stepMoveSearch(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int[][] posDirections) {
+        for (int[] direction : posDirections) {
+
+            int rowChange = direction[0]; //the first number
+            int colChange = direction[1]; //the second number
+
+            int currentRow = myPosition.getRow() + rowChange;
+            int currentCol = myPosition.getColumn() + colChange;
+
+            if (currentRow >= 1 && currentRow <= 8 && currentCol >= 1 && currentCol <= 8) {
+                ChessPosition nextPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece pieceAtPosition = board.getPiece(nextPosition);
+
+                if (pieceAtPosition != null) {
+                    //found something
+                    if (pieceAtPosition.getTeamColor() != this.getTeamColor()) {
+                        //enemy check
+                        moves.add(new ChessMove(myPosition, nextPosition, null));
+                    }
+                } else {
+                    //add possible move to list
+                    moves.add(new ChessMove(myPosition, nextPosition, null));
+                }
+            }
+        }
         return moves;
     }
 

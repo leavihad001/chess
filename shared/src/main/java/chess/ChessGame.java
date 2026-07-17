@@ -290,7 +290,9 @@ public class ChessGame {
 
                 if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
-                    for (ChessMove move : currentEnemyMoves) { if (move.getEndPosition().equals(currentKingPosition)) {return true;}}
+                    for (ChessMove move : currentEnemyMoves) {
+                        if (move.getEndPosition().equals(currentKingPosition)) {return true;}
+                    }
                 }
             }
         }
