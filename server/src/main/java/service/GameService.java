@@ -20,7 +20,8 @@ public class GameService {
         return new ListGamesResult(gameDAO.listGames());
     }
 
-    public CreateGameResult createGame(String authToken, CreateGameRequest request) throws UnauthorizedException, BadRequestException, DataAccessException {
+    public CreateGameResult createGame(String authToken, CreateGameRequest request) throws UnauthorizedException,
+            BadRequestException, DataAccessException {
         verifyAuth(authToken);
 
         if (request.gameName() == null || request.gameName().isEmpty()) {
@@ -31,7 +32,8 @@ public class GameService {
         return new CreateGameResult(newGameId);
     }
 
-    public void joinGame(String authToken, JoinGameRequest request) throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException {
+    public void joinGame(String authToken, JoinGameRequest request) throws UnauthorizedException,
+            BadRequestException, AlreadyTakenException, DataAccessException {
         AuthData authData = verifyAuth(authToken);
 
         GameData game = gameDAO.getGame(request.gameID());

@@ -81,7 +81,6 @@ public class ChessGame {
             if (!isInCheck(currentPiece.getTeamColor())) {
                 validMoves.add(moves);
             }
-            //add to validMoves if good
 
             //putting stuff back where it was
             board.addPiece(moves.getStartPosition(), currentPiece);
@@ -169,10 +168,10 @@ public class ChessGame {
     }
 
     private void enPassantMoves(ChessPosition startPosition, ChessPiece pawn, Collection<ChessMove> validMoves) {
-        if (lastMove == null) return;
+        if (lastMove == null) { return; }
 
         ChessPiece lastMovedPiece = board.getPiece(lastMove.getEndPosition());
-        if (lastMovedPiece == null || lastMovedPiece.getPieceType() != ChessPiece.PieceType.PAWN) return;
+        if (lastMovedPiece == null || lastMovedPiece.getPieceType() != ChessPiece.PieceType.PAWN) { return; }
 
         int startRow = lastMove.getStartPosition().getRow();
         int endRow = lastMove.getEndPosition().getRow();
@@ -200,15 +199,15 @@ public class ChessGame {
     }
 
     private void castlingMoves(ChessPosition startPosition, ChessPiece king, Collection<ChessMove> validMoves) {
-        if (startPosition.getColumn() != 5) return;
+        if (startPosition.getColumn() != 5) { return; }
 
-        if (isInCheck(king.getTeamColor())) return;
+        if (isInCheck(king.getTeamColor())) { return; }
 
         int row = startPosition.getRow();
         boolean isWhite = king.getTeamColor() == TeamColor.WHITE;
 
         boolean kingMoved = isWhite ? whiteKingMoved : blackKingMoved;
-        if (kingMoved) return;
+        if (kingMoved) { return; }
 
         boolean qsRookMoved = isWhite ? whiteQueensideRookMoved : blackQueensideRookMoved;
         boolean ksRookMoved = isWhite ? whiteKingsideRookMoved : blackKingsideRookMoved;
@@ -221,7 +220,8 @@ public class ChessGame {
         }
 
         // Queenside
-        if (!qsRookMoved && board.getPiece(new ChessPosition(row, 2)) == null && board.getPiece(new ChessPosition(row, 3)) == null && board.getPiece(new ChessPosition(row, 4)) == null) {
+        if (!qsRookMoved && board.getPiece(new ChessPosition(row, 2)) == null
+                && board.getPiece(new ChessPosition(row, 3)) == null && board.getPiece(new ChessPosition(row, 4)) == null) {
             if (isSafeSquare(row, 3, startPosition, king) && isSafeSquare(row, 4, startPosition, king)) {
                 validMoves.add(new ChessMove(startPosition, new ChessPosition(row, 3), null));
             }
@@ -290,9 +290,7 @@ public class ChessGame {
 
                 if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> currentEnemyMoves = currentPiece.pieceMoves(board, currentSquare);
-                    for (ChessMove move : currentEnemyMoves) {
-                        if (move.getEndPosition().equals(currentKingPosition)) {return true;}
-                    }
+                    for (ChessMove move : currentEnemyMoves) { if (move.getEndPosition().equals(currentKingPosition)) {return true;}}
                 }
             }
         }
