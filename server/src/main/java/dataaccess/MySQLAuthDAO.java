@@ -47,18 +47,54 @@ public class MySQLAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        var statement = "SELECT authToken, username FROM auth WHERE authToken = ?";
 
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+
+            preparedStatement.setString(1, authToken);
+
+            try (var resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String retrievedToken = resultSet.getString("authToken");
+                    String retrievedUsername = resultSet.getString("username");
+
+                    return new AuthData(retrievedToken, retrievedUsername);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to read auth token. " + ex.getMessage());
+        }
 
         return null;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken = ?";
 
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+
+            preparedStatement.setString(1, authToken);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to delete auth token. " + ex.getMessage());
+        }
     }
 
     @Override
     public void clearAllAuthData() throws DataAccessException {
+        var statement = "TRUNCATE TABLE auth";
 
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to clear auth data. " + ex.getMessage());
+        }
     }
 }
