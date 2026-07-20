@@ -12,7 +12,23 @@ public class MySQLUserDAO implements UserDAO {
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
 
+        var createTableStatement = """
+            CREATE TABLE IF NOT EXISTS users (
+                username VARCHAR(255) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                PRIMARY KEY (username)
+            )
+            """;
 
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(createTableStatement)) {
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to configure database. " + ex.getMessage());
+        }
 
 
     }
@@ -62,6 +78,15 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public void clearUserData() throws DataAccessException {
-        //SQL version of this
+        var statement = "TRUNCATE TABLE users";
+
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to clear user data. " + ex.getMessage());
+        }
     }
 }
