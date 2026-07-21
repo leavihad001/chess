@@ -37,4 +37,46 @@ public class MyAuthDAOTest {
         assertEquals("testUser", retrieved.username());
     }
 
+    @Test
+    @DisplayName("Get Auth - Positive")
+    public void getAuthPositive() throws DataAccessException {
+        AuthData newAuth = new AuthData("my-custom-token-123", "testUser");
+        authDAO.createAuth(newAuth);
+
+        AuthData retrieved = authDAO.getAuth("my-custom-token-123");
+
+        assertNotNull(retrieved);
+        assertEquals(newAuth.authToken(), retrieved.authToken());
+        assertEquals("testUser", retrieved.username());
+    }
+
+    @Test
+    @DisplayName("Get Auth - Negative (Invalid Token)")
+    public void getAuthNegative() throws DataAccessException {
+        AuthData retrieved = authDAO.getAuth("non-existent-token");
+        assertNull(retrieved, "Retrieving a non-existent auth token should return null");
+    }
+
+    @Test
+    @DisplayName("Delete Auth - Positive")
+    public void deleteAuthPositive() throws DataAccessException {
+        String token = "token-to-delete";
+        AuthData newAuth = new AuthData(token, "testUser");
+        authDAO.createAuth(newAuth);
+
+        authDAO.deleteAuth(token);
+
+        assertNull(authDAO.getAuth(token), "Auth token should be deleted and return null");
+    }
+
+    @Test
+    @DisplayName("Clear Auth Data")
+    public void clearAuthData() throws DataAccessException {
+        AuthData newAuth = new AuthData("clear-me-token", "clearUser");
+        authDAO.createAuth(newAuth);
+
+        authDAO.clearAllAuthData();
+
+        assertNull(authDAO.getAuth("clear-me-token"), "Auth data table should be cleared");
+    }
 }
