@@ -1,20 +1,26 @@
 package server;
+import dataaccess.*;
 import io.javalin.Javalin;
-import dataaccess.MemoryUserDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
 import service.ClearService;
 import service.UserService;
 import service.GameService;
 
 public class Server {
 
-    public int run(int desiredPort) {
+    public int run(int desiredPort) throws DataAccessException {
         Javalin javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        UserDAO userDAO;
+        AuthDAO authDAO;
+        GameDAO gameDAO;
+
+        /*userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();*/
+
+        userDAO = new MySQLUserDAO();
+        authDAO = new MySQLAuthDAO();
+        gameDAO = new MySQLGameDAO();
 
         ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
         UserService userService = new UserService(userDAO, authDAO);
