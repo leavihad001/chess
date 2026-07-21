@@ -38,6 +38,17 @@ public class MyAuthDAOTest {
     }
 
     @Test
+    @DisplayName("Create Auth - Negative (Duplicate Token)")
+    public void createAuthNegative() throws DataAccessException {
+        AuthData newAuth = new AuthData("duplicate-token", "testUser");
+        authDAO.createAuth(newAuth);
+
+        assertThrows(DataAccessException.class, () -> {
+            authDAO.createAuth(newAuth);
+        }, "Inserting a duplicate auth token should throw a DataAccessException");
+    }
+
+    @Test
     @DisplayName("Get Auth - Positive")
     public void getAuthPositive() throws DataAccessException {
         AuthData newAuth = new AuthData("my-custom-token-123", "testUser");
@@ -67,6 +78,14 @@ public class MyAuthDAOTest {
         authDAO.deleteAuth(token);
 
         assertNull(authDAO.getAuth(token), "Auth token should be deleted and return null");
+    }
+
+    @Test
+    @DisplayName("Delete Auth - Negative (Non-existent Token)")
+    public void deleteAuthNegative() {
+        assertThrows(DataAccessException.class, () -> {
+            authDAO.deleteAuth("fake-token-123");
+        }, "Deleting a non-existent token throws a DataAccessException");
     }
 
     @Test

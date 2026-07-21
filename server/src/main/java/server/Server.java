@@ -19,7 +19,6 @@ public class Server {
             authDAO = new MySQLAuthDAO();
             gameDAO = new MySQLGameDAO();
         } catch (DataAccessException e) {
-            //Still not quite sure why this fixes it
             System.err.println("Unable to initialize database: " + e.getMessage());
             throw new RuntimeException(e);
         }

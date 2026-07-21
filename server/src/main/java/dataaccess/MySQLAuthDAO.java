@@ -77,7 +77,12 @@ public class MySQLAuthDAO implements AuthDAO {
              var preparedStatement = conn.prepareStatement(statement)) {
 
             preparedStatement.setString(1, authToken);
-            preparedStatement.executeUpdate();
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new DataAccessException("Error: Auth token not found to delete.");
+            }
 
         } catch (SQLException ex) {
             throw new DataAccessException("Error: Unable to delete auth token. " + ex.getMessage());

@@ -36,6 +36,14 @@ public class MyGameDAOTest {
     }
 
     @Test
+    @DisplayName("Create Game - Negative (Null Game Name)")
+    public void createGameNegative() {
+        assertThrows(DataAccessException.class, () -> {
+            gameDAO.createGame(null);
+        }, "Creating a game with a null name should throw a DataAccessException");
+    }
+
+    @Test
     @DisplayName("Get Game - Negative (Non-existent ID)")
     public void getGameNegative() throws DataAccessException {
         GameData gameData = gameDAO.getGame(99999);
@@ -54,6 +62,15 @@ public class MyGameDAOTest {
     }
 
     @Test
+    @DisplayName("List Games - Negative (Empty Database)")
+    public void listGamesNegative() throws DataAccessException {
+        Collection<GameData> games = gameDAO.listGames();
+
+        assertNotNull(games, "The game list should not be null, even if empty");
+        assertTrue(games.isEmpty(), "Listing games on an empty database should return an empty collection");
+    }
+
+    @Test
     @DisplayName("Update Game - Positive (Join Game)")
     public void updateGamePositive() throws DataAccessException {
         int gameID = gameDAO.createGame("Joinable Game");
@@ -66,11 +83,24 @@ public class MyGameDAOTest {
     }
 
     @Test
+    @DisplayName("Update Game - Negative (Non-existent Game ID)")
+    public void updateGameNegative() throws DataAccessException {
+        int fakeGameID = 999999;
+
+        assertDoesNotThrow(() -> {
+            gameDAO.updateGame(fakeGameID, "fakeUser", "WHITE");
+        }, "Updating a non-existent game should affect 0 rows");
+
+        GameData retrieved = gameDAO.getGame(fakeGameID);
+        assertNull(retrieved, "The fake game does not exist in the database");
+    }
+
+    @Test
     @DisplayName("Clear Game Data")
     public void clearGameData() throws DataAccessException {
         gameDAO.createGame("Temp Game");
         gameDAO.clearAllGameData();
 
-        assertTrue(gameDAO.listGames().isEmpty(), "Game list should be empty after clearing");
+        assertTrue(gameDAO.listGames().isEmpty(), "Game list be empty after clearing");
     }
 }
