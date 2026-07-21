@@ -7,7 +7,7 @@ import service.GameService;
 
 public class Server {
 
-    public int run(int desiredPort) throws DataAccessException {
+    public int run(int desiredPort) {
         Javalin javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         UserDAO userDAO;
@@ -18,9 +18,15 @@ public class Server {
         authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();*/
 
-        userDAO = new MySQLUserDAO();
-        authDAO = new MySQLAuthDAO();
-        gameDAO = new MySQLGameDAO();
+        try {
+            userDAO = new MySQLUserDAO();
+            authDAO = new MySQLAuthDAO();
+            gameDAO = new MySQLGameDAO();
+        } catch (DataAccessException e) {
+            //Still not quite sure why this fixes it
+            System.err.println("Unable to initialize database: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
         UserService userService = new UserService(userDAO, authDAO);

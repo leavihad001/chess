@@ -18,7 +18,6 @@ public class MySQLGameDAO implements GameDAO {
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
 
-        // Notice gameID is AUTO_INCREMENT, and game_json is TEXT to hold the large JSON string
         var createTableStatement = """
             CREATE TABLE IF NOT EXISTS games (
                 gameID INT NOT NULL AUTO_INCREMENT,

@@ -2,6 +2,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 import model.AuthData;
 import model.UserData;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class UserService {
 
         UserData user = userDAO.getUser(request.username());
 
-        if (user == null || !user.password().equals(request.password())) {
+        if (user == null || !BCrypt.checkpw(request.password(), user.password())) {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
