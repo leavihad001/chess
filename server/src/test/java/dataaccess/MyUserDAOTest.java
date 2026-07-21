@@ -46,12 +46,31 @@ public class MyUserDAOTest {
         }, "Inserting a user with a duplicate username should throw DataAccessException");
     }
 
-    /*@Test
+    @Test
     @DisplayName("Get User - Positive")
     public void getUserPositive() throws DataAccessException {
         UserData user = new UserData("findMe", "password", "find@mail.com");
         userDAO.createUser(user);
 
-    }*/
+        UserData found = userDAO.getUser("findMe");
+        assertNotNull(found);
+        assertEquals("findMe", found.username());
+    }
 
+    @Test
+    @DisplayName("Get User - Negative (Non-existent User)")
+    public void getUserNegative() throws DataAccessException {
+        UserData found = userDAO.getUser("ghostUser");
+        assertNull(found, "Getting a non-existent user should return null");
+    }
+
+    @Test
+    @DisplayName("Clear User Data")
+    public void clearUserData() throws DataAccessException {
+        UserData user = new UserData("clearUser", "password", "clear@mail.com");
+        userDAO.createUser(user);
+
+        userDAO.clearUserData();
+        assertNull(userDAO.getUser("clearUser"), "User data should be cleared");
+    }
 }
