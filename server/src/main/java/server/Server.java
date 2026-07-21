@@ -14,10 +14,6 @@ public class Server {
         AuthDAO authDAO;
         GameDAO gameDAO;
 
-        /*userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();*/
-
         try {
             userDAO = new MySQLUserDAO();
             authDAO = new MySQLAuthDAO();
