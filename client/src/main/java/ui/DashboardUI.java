@@ -124,6 +124,7 @@ public class DashboardUI {
     }
 
     private String observe(String[] params) throws Exception {
+        //Should be similar to join?
         return null;
     }
 
