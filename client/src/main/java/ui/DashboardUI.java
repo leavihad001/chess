@@ -1,11 +1,13 @@
 package ui;
 import client.ServerFacade;
+import model.GameData;
 import reqsandres.*;
 import java.util.*;
 
 public class DashboardUI {
     private final ServerFacade facade;
     private final String authToken;
+    private GameData[] gamesArray;
 
     public DashboardUI(String serverURL, String authToken) {
         this.facade = new ServerFacade(serverURL);
@@ -73,15 +75,37 @@ public class DashboardUI {
     }
 
     private String list() throws Exception {
-        ListGamesResult result = facade.listGames(authToken);
+        ListGamesResult games = facade.listGames(authToken);
 
-        //need to list them out here
+        this.gamesArray = games.games().toArray(new GameData[0]);
 
-        return null;
+        var result = new StringBuilder();
+
+        result.append("Current Games: \n");
+
+        for (int i = 0; i < gamesArray.length; i++) {
+            GameData game = gamesArray[i];
+            String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "EMPTY";
+            String blackUser = game.blackUsername() != null ? game.blackUsername() : "EMPTY";
+            result.append(String.format(" %d. %s - ID: %d\n", i + 1, game.gameName(), game.gameID()));
+            result.append(String.format("White: %s | Black: %s\n\n", whiteUser, blackUser));
+        }
+        return result.toString();
     }
 
     private String join(String[] params) throws Exception {
-        return null;
+        if (params.length == 2) {
+            //out of time.
+            /*
+            Check gamesArray, needs to have run list first
+            Check request game number (by ID or by array number)
+            Check game color ask
+            make joingamerequest
+            "Join game" and enter next loop
+             */
+            return null;
+        }
+        throw new Exception("Expected: join <Game-Number> [WHITE or BLACK]");
     }
 
     private String observe(String[] params) throws Exception {
