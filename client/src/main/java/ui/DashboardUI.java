@@ -95,15 +95,30 @@ public class DashboardUI {
 
     private String join(String[] params) throws Exception {
         if (params.length == 2) {
-            //out of time.
-            /*
-            Check gamesArray, needs to have run list first
-            Check request game number (by ID or by array number)
-            Check game color ask
-            make joingamerequest
-            "Join game" and enter next loop
-             */
-            return null;
+            if (gamesArray == null) {
+                return "You must list games before you can join one.\n";
+            }
+            try {
+                int listNumber = Integer.parseInt(params[0]);
+                if (listNumber < 1 || listNumber > gamesArray.length) {
+                    return "Invalid game number. Please choose a number from the list.";
+                }
+
+                int realID = gamesArray[listNumber-1].gameID();
+                String teamChoice = params[1].toUpperCase();
+
+                JoinGameRequest request = new JoinGameRequest(teamChoice, realID);
+                facade.joinGame(request, authToken);
+
+                System.out.println("Successfully joined game as " + teamChoice + ".");
+
+                //Run GameREPL
+
+                return null;
+
+            } catch (NumberFormatException e) {
+                return "Expected a number for the game ID \n";
+            }
         }
         throw new Exception("Expected: join <Game-Number> [WHITE or BLACK]");
     }
