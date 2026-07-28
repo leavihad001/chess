@@ -124,8 +124,32 @@ public class DashboardUI {
     }
 
     private String observe(String[] params) throws Exception {
-        //Should be similar to join?
-        return null;
+        if (params.length == 1) {
+            if (gamesArray == null) {
+                return "You must list games before you can observe one.\n";
+            }
+            try {
+                int listNumber = Integer.parseInt(params[0]);
+                if (listNumber < 1 || listNumber > gamesArray.length) {
+                    return "Invalid game number. Please choose a number from the list.";
+                }
+
+                int realID = gamesArray[listNumber-1].gameID();
+
+                JoinGameRequest request = new JoinGameRequest(null, realID);
+                facade.joinGame(request, authToken);
+
+                System.out.println("Successfully joined game as observer.");
+
+                //Run GameREPL
+
+                return null;
+
+            } catch (NumberFormatException e) {
+                return "Expected a number for the game ID \n";
+            }
+        }
+        throw new Exception("Expected: observe <Game-Number>");
     }
 
     private String logout() throws Exception {
