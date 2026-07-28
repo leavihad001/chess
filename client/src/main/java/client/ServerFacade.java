@@ -1,6 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import requAndResu.*;
+import reqsandres.*;
 import java.io.*;
 import java.net.*;
 
@@ -27,7 +27,7 @@ public class ServerFacade {
         return this.makeRequest("GET", "/game", null, ListGamesResult.class, authToken);
     }
 
-    public CreateGameResult CreateGame(CreateGameRequest request, String authToken) throws Exception {
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws Exception {
         return this.makeRequest("POST", "/game", request, CreateGameResult.class, authToken);
     }
 

@@ -1,3 +1,3 @@
-package requAndResu;
+package reqsandres;
 
 public record LoginResult(String username, String authToken) {}

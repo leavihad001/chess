@@ -1,7 +1,7 @@
 package client;
 import org.junit.jupiter.api.*;
 import server.Server;
-import requAndResu.*;
+import reqsandres.*;
 
 public class ServerFacadeTests {
 
@@ -113,7 +113,7 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(() -> {
             facade.register(registerRequest);
             LoginResult result = facade.login(loginRequest);
-            facade.CreateGame(createGameRequest, result.authToken());
+            facade.createGame(createGameRequest, result.authToken());
         });
     }
 
@@ -122,7 +122,7 @@ public class ServerFacadeTests {
     void createGameFail() {
         CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
 
-        Exception exception = Assertions.assertThrows(Exception.class, () -> facade.CreateGame(createGameRequest, "bad-token"));
+        Exception exception = Assertions.assertThrows(Exception.class, () -> facade.createGame(createGameRequest, "bad-token"));
 
         Assertions.assertTrue(exception.getMessage().contains("401"));
     }
@@ -137,7 +137,7 @@ public class ServerFacadeTests {
         String validToken = Assertions.assertDoesNotThrow(() -> {
             facade.register(registerRequest);
             LoginResult result = facade.login(loginRequest);
-            facade.CreateGame(createGameRequest, result.authToken());
+            facade.createGame(createGameRequest, result.authToken());
 
             return result.authToken();
         });
@@ -157,7 +157,7 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(() -> {
             facade.register(registerRequest);
             LoginResult result = facade.login(loginRequest);
-            facade.CreateGame(createGameRequest, result.authToken());
+            facade.createGame(createGameRequest, result.authToken());
         });
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.listGames("bad-token"));
@@ -167,7 +167,7 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("Join Game Success")
-    void JoinGameSuccess() {
+    void joinGameSuccess() {
         RegisterRequest registerRequest = new RegisterRequest("testUser", "testPass", "test@test.com");
         LoginRequest loginRequest = new LoginRequest("testUser", "testPass");
         CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
@@ -178,7 +178,7 @@ public class ServerFacadeTests {
         });
 
         JoinGameRequest joinGameRequest = Assertions.assertDoesNotThrow(() -> {
-            CreateGameResult createResult = facade.CreateGame(createGameRequest, loginResult.authToken());
+            CreateGameResult createResult = facade.createGame(createGameRequest, loginResult.authToken());
             return new JoinGameRequest("WHITE", createResult.gameID());
         });
 
@@ -195,7 +195,7 @@ public class ServerFacadeTests {
         String validToken = Assertions.assertDoesNotThrow(() -> {
             facade.register(registerRequest);
             LoginResult loginResult = facade.login(loginRequest);
-            facade.CreateGame(createGameRequest, loginResult.authToken());
+            facade.createGame(createGameRequest, loginResult.authToken());
 
             return loginResult.authToken();
         });
