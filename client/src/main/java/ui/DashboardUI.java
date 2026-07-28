@@ -112,7 +112,7 @@ public class DashboardUI {
 
                 System.out.println("Successfully joined game as " + teamChoice + ".");
 
-                //Run GameREPL
+                ChessBoardDraw.draw(teamChoice);
 
                 return null;
 
@@ -141,7 +141,7 @@ public class DashboardUI {
 
                 System.out.println("Successfully joined game as observer.");
 
-                //Run GameREPL
+                ChessBoardDraw.draw("WHITE");
 
                 return null;
 
