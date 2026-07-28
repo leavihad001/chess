@@ -1,19 +1,15 @@
 package ui;
 import client.ServerFacade;
-import reqsandres.LoginRequest;
-import reqsandres.LoginResult;
-import reqsandres.RegisterRequest;
-import reqsandres.RegisterResult;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import reqsandres.*;
+import java.util.*;
 
 public class PreloginUI {
     private final ServerFacade facade;
+    private final String serverURL;
 
     public PreloginUI(String serverURL) {
         this.facade = new ServerFacade(serverURL);
+        this.serverURL = serverURL;
     }
 
     public void repl() {
@@ -69,8 +65,9 @@ public class PreloginUI {
             RegisterRequest request = new RegisterRequest(user, pass, email);
             RegisterResult result = facade.register(request);
 
-            //new DashboardUI(serverURL, result.authToken()).run();
-            //I still need to implement this part ^^^
+            System.out.println("Logged in as " + user);
+
+            new DashboardUI(serverURL, result.authToken()).repl();
 
             return null;
         }
@@ -88,8 +85,9 @@ public class PreloginUI {
             LoginRequest request = new LoginRequest(user, pass);
             LoginResult result = facade.login(request);
 
-            //new DashboardUI(serverURL, result.authToken()).run();
-            //I still need to implement this part ^^^
+            System.out.println("Logged in as " + user);
+
+            new DashboardUI(serverURL, result.authToken()).repl();
 
             return null;
         }
