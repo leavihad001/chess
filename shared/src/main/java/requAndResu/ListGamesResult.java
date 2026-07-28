@@ -1,4 +1,4 @@
-package requests;
+package requAndResu;
 import model.GameData;
 import java.util.Collection;
 

@@ -1,6 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import requests.*;
+import requAndResu.*;
 import java.io.*;
 import java.net.*;
 
@@ -16,23 +16,27 @@ public class ServerFacade {
     }
 
     public LoginResult login(LoginRequest request) throws Exception {
-        return this.makeRequest("POST", "/session", request, LoginRequest.class, null);
+        return this.makeRequest("POST", "/session", request, LoginResult.class, null);
     }
 
     public void logout(String authToken) throws Exception {
         this.makeRequest("DELETE", "/session", null, null, authToken);
     }
 
-    public ListGamesResult listGames(ListGamesRequest request, String authToken) throws Exception {
-        return this.makeRequest("GET", "/game", request, LoginRequest.class, authToken);
+    public ListGamesResult listGames(String authToken) throws Exception {
+        return this.makeRequest("GET", "/game", null, ListGamesResult.class, authToken);
     }
 
     public CreateGameResult CreateGame(CreateGameRequest request, String authToken) throws Exception {
-        return this.makeRequest("POST", "/game", request, CreateGameRequest.class, authToken);
+        return this.makeRequest("POST", "/game", request, CreateGameResult.class, authToken);
     }
 
     public void joinGame(JoinGameRequest request, String authToken) throws Exception {
         this.makeRequest("PUT", "/game", request, null, authToken);
+    }
+
+    public void clear() throws Exception {
+        this.makeRequest("DELETE", "/db", null, null, null);
     }
 
 
@@ -70,12 +74,11 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        if (http.getContentLength() < 0) {
+
+        if (responseClass != null) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
+                response = new Gson().fromJson(reader, responseClass);
             }
         }
         return response;

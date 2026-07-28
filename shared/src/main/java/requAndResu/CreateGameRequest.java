@@ -1,3 +1,3 @@
-package requests;
+package requAndResu;
 
 public record CreateGameRequest(String gameName) {}
