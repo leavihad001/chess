@@ -45,13 +45,13 @@ public class ChessBoardDraw {
     }
 
     private static void drawPieceGrid(boolean isWhite) {
-        keyPiecePrint(!isWhite);
+        keyPiecePrint(!isWhite, 0);
         if (isWhite) {
             row--;
         } else {
             row++;
         }
-        pawnPiecePrint(!isWhite);
+        pawnPiecePrint(!isWhite, 1);
         if (isWhite) {
             row--;
         } else {
@@ -60,13 +60,13 @@ public class ChessBoardDraw {
 
         drawMiddleGrid(isWhite);
 
-        pawnPiecePrint(isWhite);
+        pawnPiecePrint(isWhite, 0);
         if (isWhite) {
             row--;
         } else {
             row++;
         }
-        keyPiecePrint(isWhite);
+        keyPiecePrint(isWhite, 1);
         if (isWhite) {
             row--;
         } else {
@@ -74,7 +74,7 @@ public class ChessBoardDraw {
         }
     }
 
-    private static void keyPiecePrint(boolean isWhite) {
+    private static void keyPiecePrint(boolean isWhite, int i) {
         String[] whitePieceChars = {" ♖ ", " ♘ ", " ♗ ", " ♕ ", " ♔ ", " ♗ ", " ♘ ", " ♖ "};
         String[] blackPieceChars = {" ♜ ", " ♞ ", " ♝ ", " ♛ ", " ♚ ", " ♝ ", " ♞ ", " ♜ "};
 
@@ -83,10 +83,10 @@ public class ChessBoardDraw {
         System.out.print(" " + row + " ");
 
         for (int col = 0; col < 8; col++) {
-            if ((row + col) % 2 == 0) {
-                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-            } else {
+            if ((i + (col + 1)) % 2 == 0) {
                 System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+            } else {
+                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
             }
             if (isWhite) {
                 System.out.print(whitePieceChars[col]);
@@ -102,16 +102,16 @@ public class ChessBoardDraw {
         clearLine();
     }
 
-    private static void pawnPiecePrint(boolean isWhite) {
+    private static void pawnPiecePrint(boolean isWhite, int i) {
         System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
         System.out.print(" " + row + " ");
 
         for (int col = 0; col < 8; col++) {
-            if ((row + col) % 2 == 0) {
-                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-            } else {
+            if ((i + (col + 1)) % 2 == 0) {
                 System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+            } else {
+                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
             }
 
             if (isWhite) {
@@ -135,10 +135,10 @@ public class ChessBoardDraw {
             System.out.print(" " + row + " ");
 
             for (int col = 0; col < 8; col++) {
-                if ((row + col) % 2 == 0) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-                } else {
+                if ((i + (col + 1)) % 2 == 0) {
                     System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                } else {
+                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
                 }
                 System.out.print(EscapeSequences.EMPTY);
             }

@@ -24,7 +24,9 @@ public class DashboardUI {
 
             try {
                 result = evaluate(line);
-                System.out.println(result);
+                if (result != null && !Objects.equals(result, "logout")) {
+                    System.out.println(result);
+                }
             } catch (Throwable e) {
                 System.out.print(e.getMessage() + "\n");
             }
@@ -43,7 +45,6 @@ public class DashboardUI {
                 case "join" -> join(params);
                 case "observe" -> observe(params);
                 case "logout" -> logout();
-                case "quit" -> "quit";
                 default -> help();
             };
         } catch (Exception e) {
@@ -66,11 +67,10 @@ public class DashboardUI {
         if (params.length == 1) {
             String name = params[0];
 
-            ListGamesResult games = facade.listGames(authToken);
-            
             CreateGameRequest request = new CreateGameRequest(name);
             CreateGameResult result = facade.createGame(request, authToken);
 
+            ListGamesResult games = facade.listGames(authToken);
             this.gamesArray = games.games().toArray(new GameData[0]);
 
             var array = new StringBuilder();
@@ -87,28 +87,36 @@ public class DashboardUI {
 
         this.gamesArray = games.games().toArray(new GameData[0]);
 
-        var result = new StringBuilder();
+        var array = new StringBuilder();
 
-        result.append("Current Games: \n");
+        array.append("Current Games: \n");
 
-        buildArray(result);
-        return result.toString();
+        buildArray(array);
+        return array.toString();
     }
 
-    private void buildArray(StringBuilder result) {
+    private void buildArray(StringBuilder array) {
         for (int i = 0; i < gamesArray.length; i++) {
             GameData game = gamesArray[i];
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "EMPTY";
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "EMPTY";
-            result.append(String.format(" %d. %s - ID: %d\n", i + 1, game.gameName(), game.gameID()));
-            result.append(String.format("White: %s | Black: %s\n\n", whiteUser, blackUser));
+            array.append(String.format(" %d. %s - ID: %d\n", i + 1, game.gameName(), game.gameID()));
+            array.append(String.format("White: %s | Black: %s\n\n", whiteUser, blackUser));
         }
     }
 
     private String join(String[] params) throws Exception {
         if (params.length == 2) {
             if (gamesArray == null) {
-                return "You must list games before you can join one.\n";
+                ListGamesResult games = facade.listGames(authToken);
+                this.gamesArray = games.games().toArray(new GameData[0]);
+
+                var array = new StringBuilder();
+
+                buildArray(array);
+                if (gamesArray == null) {
+                    return "No games created. Please start a game to play.\n";
+                }
             }
             try {
                 int listNumber = Integer.parseInt(params[0]);
@@ -122,7 +130,7 @@ public class DashboardUI {
                 JoinGameRequest request = new JoinGameRequest(teamChoice, realID);
                 facade.joinGame(request, authToken);
 
-                System.out.println("Successfully joined game as " + teamChoice + ".");
+                System.out.println("Successfully joined game \"" + gamesArray[listNumber-1].gameName() + "\" as " + teamChoice + ".");
 
                 ChessBoardDraw.draw(teamChoice);
 
@@ -138,7 +146,15 @@ public class DashboardUI {
     private String observe(String[] params) throws Exception {
         if (params.length == 1) {
             if (gamesArray == null) {
-                return "You must list games before you can observe one.\n";
+                ListGamesResult games = facade.listGames(authToken);
+                this.gamesArray = games.games().toArray(new GameData[0]);
+
+                var array = new StringBuilder();
+
+                buildArray(array);
+                if (gamesArray == null) {
+                    return "No games created.\n";
+                }
             }
             try {
                 int listNumber = Integer.parseInt(params[0]);
@@ -151,7 +167,7 @@ public class DashboardUI {
                 JoinGameRequest request = new JoinGameRequest("OBSERVE", realID);
                 facade.joinGame(request, authToken);
 
-                System.out.println("Successfully joined game as observer.");
+                System.out.println("Successfully joined game \"" + gamesArray[listNumber-1].gameName() + "\" as observer.");
 
                 ChessBoardDraw.draw("WHITE");
 

@@ -23,7 +23,9 @@ public class PreloginUI {
 
             try {
                 result = eval(line);
-                System.out.println(result);
+                if (result != null) {
+                    System.out.println(result);
+                }
             } catch (Throwable e) {
                 System.out.print(e.getMessage() + "\n");
             }
