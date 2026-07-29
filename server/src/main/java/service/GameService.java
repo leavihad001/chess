@@ -4,6 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
+import java.util.Objects;
 
 
 public class GameService {
@@ -41,6 +42,9 @@ public class GameService {
             throw new BadRequestException("Error: bad request");
         }
 
+        if (Objects.equals(request.playerColor(), "OBSERVE")) {
+            return;
+        }
         if (request.playerColor() == null || (!request.playerColor().equals("WHITE") && !request.playerColor().equals("BLACK"))) {
             throw new BadRequestException("Error: bad request");
         }

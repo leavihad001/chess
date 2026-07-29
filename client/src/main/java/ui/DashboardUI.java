@@ -66,8 +66,16 @@ public class DashboardUI {
         if (params.length == 1) {
             String name = params[0];
 
+            ListGamesResult games = facade.listGames(authToken);
+            
             CreateGameRequest request = new CreateGameRequest(name);
             CreateGameResult result = facade.createGame(request, authToken);
+
+            this.gamesArray = games.games().toArray(new GameData[0]);
+
+            var array = new StringBuilder();
+
+            buildArray(array);
 
             return String.format("Game '%s' created. ID: %d\n", name, result.gameID());
         }
@@ -83,6 +91,11 @@ public class DashboardUI {
 
         result.append("Current Games: \n");
 
+        buildArray(result);
+        return result.toString();
+    }
+
+    private void buildArray(StringBuilder result) {
         for (int i = 0; i < gamesArray.length; i++) {
             GameData game = gamesArray[i];
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "EMPTY";
@@ -90,7 +103,6 @@ public class DashboardUI {
             result.append(String.format(" %d. %s - ID: %d\n", i + 1, game.gameName(), game.gameID()));
             result.append(String.format("White: %s | Black: %s\n\n", whiteUser, blackUser));
         }
-        return result.toString();
     }
 
     private String join(String[] params) throws Exception {
@@ -136,7 +148,7 @@ public class DashboardUI {
 
                 int realID = gamesArray[listNumber-1].gameID();
 
-                JoinGameRequest request = new JoinGameRequest(null, realID);
+                JoinGameRequest request = new JoinGameRequest("OBSERVE", realID);
                 facade.joinGame(request, authToken);
 
                 System.out.println("Successfully joined game as observer.");
