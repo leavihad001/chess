@@ -23,7 +23,7 @@ public class DashboardUI {
             String line = scanner.nextLine();
 
             try {
-                result = eval(line);
+                result = evaluate(line);
                 System.out.println(result);
             } catch (Throwable e) {
                 System.out.print(e.getMessage() + "\n");
@@ -31,7 +31,7 @@ public class DashboardUI {
         }
     }
 
-    private String eval(String in) {
+    private String evaluate(String in) {
         try {
             var tokens = in.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";

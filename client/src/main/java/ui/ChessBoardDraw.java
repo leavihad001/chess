@@ -12,8 +12,11 @@ public class ChessBoardDraw {
 
         boolean isWhite = !teamChoice.equalsIgnoreCase("BLACK");
 
-        if (isWhite) row = 8;
-        else row = 1;
+        if (isWhite) {
+            row = 8;
+        } else {
+            row = 1;
+        }
 
         drawHeadFoot(isWhite);
         drawPieceGrid(isWhite);
@@ -43,20 +46,32 @@ public class ChessBoardDraw {
 
     private static void drawPieceGrid(boolean isWhite) {
         keyPiecePrint(!isWhite);
-        if (isWhite) row--;
-        else row++;
+        if (isWhite) {
+            row--;
+        } else {
+            row++;
+        }
         pawnPiecePrint(!isWhite);
-        if (isWhite) row--;
-        else row++;
+        if (isWhite) {
+            row--;
+        } else {
+            row++;
+        }
 
         drawMiddleGrid(isWhite);
 
         pawnPiecePrint(isWhite);
-        if (isWhite) row--;
-        else row++;
+        if (isWhite) {
+            row--;
+        } else {
+            row++;
+        }
         keyPiecePrint(isWhite);
-        if (isWhite) row--;
-        else row++;
+        if (isWhite) {
+            row--;
+        } else {
+            row++;
+        }
     }
 
     private static void keyPiecePrint(boolean isWhite) {
@@ -133,8 +148,11 @@ public class ChessBoardDraw {
 
             clearLine();
 
-            if (isWhite) row--;
-            else row++;
+            if (isWhite) {
+                row--;
+            } else {
+                row++;
+            }
         }
     }
 
