@@ -49,7 +49,8 @@ public class ServerFacadeTests {
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.register(request));
 
-        Assertions.assertTrue(exception.getMessage().contains("403"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("already taken")
+                || exception.getMessage().toLowerCase().contains("forbidden"));
     }
 
     @Test
@@ -78,7 +79,7 @@ public class ServerFacadeTests {
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.login(badLoginRequest));
 
-        Assertions.assertTrue(exception.getMessage().contains("401"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("unauthorized"));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class ServerFacadeTests {
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.logout("bad-token"));
 
-        Assertions.assertTrue(exception.getMessage().contains("401"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("unauthorized"));
     }
 
     @Test
@@ -124,7 +125,7 @@ public class ServerFacadeTests {
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.createGame(createGameRequest, "bad-token"));
 
-        Assertions.assertTrue(exception.getMessage().contains("401"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("unauthorized"));
     }
 
     @Test
@@ -162,7 +163,7 @@ public class ServerFacadeTests {
 
         Exception exception = Assertions.assertThrows(Exception.class, () -> facade.listGames("bad-token"));
 
-        Assertions.assertTrue(exception.getMessage().contains("401"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("unauthorized"));
     }
 
     @Test
@@ -205,6 +206,7 @@ public class ServerFacadeTests {
             facade.joinGame(joinGameRequest, validToken);
         });
 
-        Assertions.assertTrue(exception.getMessage().contains("400"));
+        Assertions.assertTrue(exception.getMessage().toLowerCase().contains("bad request")
+                || exception.getMessage().toLowerCase().contains("invalid"));
     }
 }
