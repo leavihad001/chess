@@ -41,19 +41,23 @@ public class GameService {
             throw new BadRequestException("Error: bad request");
         }
 
-        if (request.playerColor() == null || (!request.playerColor().equals("WHITE") && !request.playerColor().equals("BLACK"))) {
-            throw new BadRequestException("Error: bad request");
-        }
+        if (request.playerColor() != null && !request.playerColor().isEmpty()) {
+            String color = request.playerColor().toUpperCase();
 
-        if (request.playerColor().equals("WHITE") && game.whiteUsername() != null) {
-            throw new AlreadyTakenException("Error: already taken");
-        } else if (request.playerColor().equals("BLACK") && game.blackUsername() != null) {
-            throw new AlreadyTakenException("Error: already taken");
-        }
+            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                throw new BadRequestException("Error: bad request");
+            }
 
-        gameDAO.updateGame(request.gameID(), authData.username(), request.playerColor());
+            if (color.equals("WHITE") && game.whiteUsername() != null) {
+                throw new AlreadyTakenException("Error: already taken");
+            } else if (color.equals("BLACK") && game.blackUsername() != null) {
+                throw new AlreadyTakenException("Error: already taken");
+            }
+            
+            gameDAO.updateGame(request.gameID(), authData.username(), color);
+        }
     }
-
+    
     private AuthData verifyAuth(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {

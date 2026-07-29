@@ -24,7 +24,7 @@ public class DashboardUI {
 
             try {
                 result = eval(line);
-                System.out.print(result);
+                System.out.println(result);
             } catch (Throwable e) {
                 System.out.print(e.getMessage() + "\n");
             }
