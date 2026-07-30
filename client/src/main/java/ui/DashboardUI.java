@@ -100,7 +100,7 @@ public class DashboardUI {
             GameData game = gamesArray[i];
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "EMPTY";
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "EMPTY";
-            array.append(String.format(" %d. %s - ID: %d\n", i + 1, game.gameName(), game.gameID()));
+            array.append(String.format(" %d. %s\n", i + 1, game.gameName()));
             array.append(String.format("White: %s | Black: %s\n\n", whiteUser, blackUser));
         }
     }
