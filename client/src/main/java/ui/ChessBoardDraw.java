@@ -75,8 +75,11 @@ public class ChessBoardDraw {
     }
 
     private static void keyPiecePrint(boolean isWhite, int i) {
-        String[] whitePieceChars = {" ♖ ", " ♘ ", " ♗ ", " ♕ ", " ♔ ", " ♗ ", " ♘ ", " ♖ "};
-        String[] blackPieceChars = {" ♜ ", " ♞ ", " ♝ ", " ♛ ", " ♚ ", " ♝ ", " ♞ ", " ♜ "};
+        String[] bPieceCharsWhiteOrdered = {" ♜ ", " ♞ ", " ♝ ", " ♛ ", " ♚ ", " ♝ ", " ♞ ", " ♜ "};
+        String[] wPieceCharsWhiteOrdered = {" ♖ ", " ♘ ", " ♗ ", " ♕ ", " ♔ ", " ♗ ", " ♘ ", " ♖ "};
+
+        String[] wPieceCharsBlackOrdered = {" ♖ ", " ♘ ", " ♗ ", " ♔ ", " ♕ ", " ♗ ", " ♘ ", " ♖ "};
+        String[] bPieceCharsBlackOrdered = {" ♜ ", " ♞ ", " ♝ ", " ♚ ", " ♛ ",  " ♝ ", " ♞ ", " ♜ "};
 
         System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
@@ -88,10 +91,14 @@ public class ChessBoardDraw {
             } else {
                 System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
             }
-            if (isWhite) {
-                System.out.print(whitePieceChars[col]);
+            if (isWhite && i == 0) {
+                System.out.print(wPieceCharsBlackOrdered[col]);
+            } else if (isWhite && i == 1) {
+                System.out.print(wPieceCharsWhiteOrdered[col]);
+            } else if (!isWhite && i == 0) {
+                System.out.print(bPieceCharsWhiteOrdered[col]);
             } else {
-                System.out.print(blackPieceChars[col]);
+                System.out.print(bPieceCharsBlackOrdered[col]);
             }
         }
 

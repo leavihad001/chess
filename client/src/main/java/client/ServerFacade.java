@@ -89,7 +89,8 @@ public class ServerFacade {
         switch (status) {
             case 400 -> throw new Exception("Invalid request. Please check your input and try again.");
             case 401 -> throw new Exception("Unauthorized: Please log in again or check your credentials.");
-            case 403 -> throw new Exception("Forbidden: You do not have permission to join/modify this game.");
+            case 402 -> throw new Exception("User already taken.");
+            case 403 -> throw new Exception("You do not have permission to join/modify this game.");
             case 404 -> throw new Exception("Not found: The requested game or resource does not exist.");
             case 500 -> throw new Exception("Server error: Something went wrong on the server.");
             default -> throw new Exception("An unexpected error occurred (Status code: " + status + ").");
