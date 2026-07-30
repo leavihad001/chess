@@ -31,7 +31,7 @@ public class UserHandler {
             ctx.status(400);
             ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (AlreadyTakenException e) {
-            ctx.status(402);
+            ctx.status(403);
             ctx.result("{ \"message\": \"Error: already taken\" }");
         } catch (DataAccessException e) {
             ctx.status(500);
