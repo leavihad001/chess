@@ -6,12 +6,14 @@ import java.util.*;
 
 public class DashboardUI {
     private final ServerFacade facade;
+    private final String serverURL;
     private final String authToken;
     private GameData[] gamesArray;
 
     public DashboardUI(String serverURL, String authToken) {
         this.facade = new ServerFacade(serverURL);
         this.authToken = authToken;
+        this.serverURL = serverURL;
     }
 
     public void repl() {
@@ -132,7 +134,7 @@ public class DashboardUI {
 
                 System.out.println("Successfully joined game \"" + gamesArray[listNumber-1].gameName() + "\" as " + teamChoice + ".");
 
-                ChessBoardDraw.draw(teamChoice);
+                new GameUI(serverURL, authToken, realID, teamChoice).repl();
 
                 return null;
 
@@ -169,7 +171,7 @@ public class DashboardUI {
 
                 System.out.println("Successfully joined game \"" + gamesArray[listNumber-1].gameName() + "\" as observer.");
 
-                ChessBoardDraw.draw("WHITE");
+                new GameUI(serverURL, authToken, realID, "OBSERVE").repl();
 
                 return null;
 

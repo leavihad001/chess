@@ -2,7 +2,7 @@ package client.websocket;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,8 +33,21 @@ public class WebSocketFacade extends Endpoint implements MessageHandler.Whole<St
     @Override
     public void onMessage(String message) {
         try {
-            ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-            observer.notify(serverMessage);
+            ServerMessage baseMessage = gson.fromJson(message, ServerMessage.class);
+            switch (baseMessage.getServerMessageType()) {
+                case LOAD_GAME -> {
+                    LoadGameMessage loadMsg = gson.fromJson(message, LoadGameMessage.class);
+                    observer.notify(loadMsg);
+                }
+                case NOTIFICATION -> {
+                    NotificationMessage noticeMsg = gson.fromJson(message, NotificationMessage.class);
+                    observer.notify(noticeMsg);
+                }
+                case ERROR -> {
+                    ErrorMessage errorMsg = gson.fromJson(message, ErrorMessage.class);
+                    observer.notify(errorMsg);
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error deserializing message from server: " + e.getMessage());
         }
