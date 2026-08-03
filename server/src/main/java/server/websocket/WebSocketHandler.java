@@ -3,6 +3,10 @@ import com.google.gson.Gson;
 import io.javalin.websocket.WsMessageContext;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
+import model.AuthData;
+import model.GameData;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -38,7 +42,33 @@ public class WebSocketHandler {
     }
 
     private void connect(UserGameCommand command, Session session) throws IOException {
-        //need to finish this
+        try {
+            AuthData auth = gameService.verifyAuth(command.getAuthToken());
+            String username = auth.username();
+
+            GameData gameData = gameService.getGame(command.getGameID());
+            int gameID = gameData.gameID();
+
+            sessions.addSession(gameID, session);
+
+            LoadGameMessage loadMessage = new LoadGameMessage(gameData.game());
+            sessions.sendMessage(session, loadMessage);
+
+            String role = "an observer";
+            if (username.equals(gameData.whiteUsername())) {
+                role = "white";
+            } else if (username.equals(gameData.blackUsername())) {
+                role = "black";
+            }
+
+            String noticeText = String.format("%s joined the game as %s.", username, role);
+            NotificationMessage noticeMessage = new NotificationMessage(noticeText);
+            sessions.broadcast(gameID, noticeMessage, session);
+
+        } catch (Exception e) {
+            sendError(session, "Error: " + e.getMessage());
+        }
+
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws IOException {
