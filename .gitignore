@@ -11,3 +11,6 @@ out/
 
 ### Chess project ###
 server/**/db.properties
+
+### My Database Clear out ###
+/server/src/test/java/passoff/server/ClearTest.java
