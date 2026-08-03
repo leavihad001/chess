@@ -67,4 +67,10 @@ public class WebSocketFacade extends Endpoint implements MessageHandler.Whole<St
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
         this.session.getBasicRemote().sendText(gson.toJson(command));
     }
+
+    public void makeMove(String authToken, int gameID, chess.ChessMove move) throws IOException {
+        websocket.commands.MakeMoveCommand command =
+                new websocket.commands.MakeMoveCommand(authToken, gameID, move);
+        this.session.getBasicRemote().sendText(gson.toJson(command));
+    }
 }

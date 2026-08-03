@@ -1,4 +1,5 @@
 package ui;
+import com.google.gson.Gson;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import websocket.messages.ErrorMessage;
@@ -16,6 +17,7 @@ public class GameUI implements NotificationHandler {
     private final int gameID;
     private final String playerColor;
     private WebSocketFacade wsFacade;
+    private final Gson gson = new Gson();
 
     public GameUI(String serverURL, String authToken, int gameID, String playerColor) {
         this.serverURL = serverURL;
@@ -56,6 +58,7 @@ public class GameUI implements NotificationHandler {
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> {
+                LoadGameMessage loadMsg = (LoadGameMessage) message;
                 System.out.println();
 
                 String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
@@ -88,6 +91,8 @@ public class GameUI implements NotificationHandler {
 
             return switch (cmd) {
                 case "leave" -> leave();
+                case "redraw" -> redraw();
+                case "move" -> makeMove(params);
                 //need to add others (redraw, move, resign, highlight)
                 default -> help();
             };
@@ -97,11 +102,70 @@ public class GameUI implements NotificationHandler {
     }
 
     private String help() {
+        return """
+            - redraw - redraws the chess board
+            - leave - removes you from the game and returns to dashboard
+            - move <START> <END> - make a move (e.g. move e2 e4)
+            - resign - forfeit the game
+            - highlight <SQUARE> - highlight legal moves for a piece (e.g. highlight e2)
+            - help - with possible commands
+            """;
+    }
+
+    private String redraw() {
+        String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
+        ChessBoardDraw.draw(drawColor);
         return null;
     }
 
     private String leave() {
         //need to finish this notification part
         return "leave";
+    }
+
+    private String makeMove(String[] params) {
+        if (params.length < 2) {
+            return "Expected: move <START> <END> [PROMOTION_PIECE] (e.g., move e2 e4 or move e7 e8 Q)";
+        }
+
+        try {
+            chess.ChessPosition start = parsePosition(params[0]);
+            chess.ChessPosition end = parsePosition(params[1]);
+
+            chess.ChessPiece.PieceType promotion = null;
+            if (params.length >= 3) {
+                promotion = parsePromotion(params[2]);
+            }
+
+            chess.ChessMove move = new chess.ChessMove(start, end, promotion);
+            wsFacade.makeMove(authToken, gameID, move);
+
+            return null;
+        } catch (Exception e) {
+            return "Invalid move format: " + e.getMessage();
+        }
+    }
+
+    private chess.ChessPosition parsePosition(String pos) throws IllegalArgumentException {
+        if (pos.length() != 2) {
+            throw new IllegalArgumentException("Positions must be 2 characters (e.g., e2)");
+        }
+        int col = pos.toLowerCase().charAt(0) - 'a' + 1;
+        int row = pos.charAt(1) - '0';
+
+        if (col < 1 || col > 8 || row < 1 || row > 8) {
+            throw new IllegalArgumentException("Position out of board bounds: " + pos);
+        }
+        return new chess.ChessPosition(row, col);
+    }
+
+    private chess.ChessPiece.PieceType parsePromotion(String promo) {
+        return switch (promo.toUpperCase()) {
+            case "Q", "QUEEN" -> chess.ChessPiece.PieceType.QUEEN;
+            case "R", "ROOK" -> chess.ChessPiece.PieceType.ROOK;
+            case "B", "BISHOP" -> chess.ChessPiece.PieceType.BISHOP;
+            case "N", "KNIGHT" -> chess.ChessPiece.PieceType.KNIGHT;
+            default -> null;
+        };
     }
 }
