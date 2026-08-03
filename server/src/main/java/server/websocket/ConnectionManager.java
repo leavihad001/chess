@@ -5,6 +5,8 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -34,6 +36,27 @@ public class ConnectionManager {
     public void sendMessage(Session session, ServerMessage message) throws IOException {
         if (session.isOpen()) {
             session.getRemote().sendString(gson.toJson(message));
+        }
+    }
+
+    public void broadcast(int gameID, ServerMessage message, Session excludeSession) throws IOException {
+        Set<Session> sessions = getSessions(gameID);
+        String jsonMessage = gson.toJson(message);
+
+        List<Session> closedSessions = new ArrayList<>();
+
+        for (Session session : sessions) {
+            if (session.isOpen()) {
+                if (!session.equals(excludeSession)) {
+                    session.getRemote().sendString(jsonMessage);
+                }
+            } else {
+                closedSessions.add(session);
+            }
+        }
+
+        for (Session closedSession : closedSessions) {
+            removeSession(gameID, closedSession);
         }
     }
 }

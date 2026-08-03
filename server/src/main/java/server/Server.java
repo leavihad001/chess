@@ -1,6 +1,7 @@
 package server;
 import dataaccess.*;
 import io.javalin.Javalin;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.UserService;
 import service.GameService;
@@ -30,6 +31,12 @@ public class Server {
         ClearHandler clearHandler = new ClearHandler(clearService);
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
+
+        WebSocketHandler webSocketHandler = new WebSocketHandler(gameService);
+
+        javalin.ws("/ws", ws -> {
+            ws.onMessage(webSocketHandler::handleMessage);
+        });
 
         javalin.delete("/db", clearHandler::clear);
         javalin.post("/user", userHandler::register);

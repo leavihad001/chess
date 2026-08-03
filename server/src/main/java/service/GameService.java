@@ -58,11 +58,19 @@ public class GameService {
         gameDAO.updateGame(request.gameID(), authData.username(), request.playerColor());
     }
 
-    private AuthData verifyAuth(String authToken) throws UnauthorizedException, DataAccessException {
+    public AuthData verifyAuth(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
         return authData;
+    }
+
+    public GameData getGame(int gameID) throws BadRequestException, DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+        return game;
     }
 }
