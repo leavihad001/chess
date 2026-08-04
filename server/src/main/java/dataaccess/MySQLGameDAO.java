@@ -141,7 +141,6 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
-    // Helper method to deserialize the JSON back into a GameData object
     private GameData readGameData(ResultSet resultSet) throws SQLException {
         int gameID = resultSet.getInt("gameID");
         String whiteUsername = resultSet.getString("whiteUsername");
@@ -152,5 +151,23 @@ public class MySQLGameDAO implements GameDAO {
         ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+    }
+
+    @Override
+    public void updateGameState(int gameID, ChessGame game) throws DataAccessException {
+        var statement = "UPDATE games SET game_json = ? WHERE gameID = ?";
+        var jsonGame = new Gson().toJson(game);
+
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+
+            preparedStatement.setString(1, jsonGame);
+            preparedStatement.setInt(2, gameID);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: Unable to update game state. " + ex.getMessage());
+        }
     }
 }
