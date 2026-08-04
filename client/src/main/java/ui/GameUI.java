@@ -1,4 +1,5 @@
 package ui;
+import chess.ChessPosition;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import websocket.messages.ErrorMessage;
@@ -8,6 +9,7 @@ import websocket.messages.ServerMessage;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
 
 public class GameUI implements NotificationHandler {
 
@@ -62,7 +64,7 @@ public class GameUI implements NotificationHandler {
                 this.currentGame = loadMsg.getGame();
 
                 String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
-                ChessBoardDraw.draw(currentGame, drawColor);
+                ChessBoardDraw.draw(currentGame, drawColor, null);
 
                 printUIHead();
             }
@@ -94,7 +96,7 @@ public class GameUI implements NotificationHandler {
                 case "leave" -> leave();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                //need to add others (highlight)
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (Exception e) {
@@ -116,7 +118,7 @@ public class GameUI implements NotificationHandler {
     private String redraw() {
         if (currentGame != null) {
             String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
-            ChessBoardDraw.draw(currentGame, drawColor);
+            ChessBoardDraw.draw(currentGame, drawColor, null);
         } else {
             System.out.println("No board state available yet.");
         }
@@ -170,6 +172,38 @@ public class GameUI implements NotificationHandler {
             System.out.println("Resignation cancelled.");
         }
         return null;
+    }
+
+    private String highlight(String[] params) {
+        if (params.length < 1) {
+            return "Expected: highlight <SQUARE> (e.g., highlight e2)";
+        }
+
+        if (currentGame == null) {
+            return "No board state available yet.";
+        }
+
+        try {
+            chess.ChessPosition startPos = parsePosition(params[0]);
+
+            var validMoves = currentGame.validMoves(startPos);
+            if (validMoves == null || validMoves.isEmpty()) {
+                return "No valid moves for the piece at " + params[0];
+            }
+
+            Set<ChessPosition> highlightedSquares = new java.util.HashSet<>();
+            highlightedSquares.add(startPos);
+            for (chess.ChessMove move : validMoves) {
+                highlightedSquares.add(move.getEndPosition());
+            }
+
+            String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
+            ChessBoardDraw.draw(currentGame, drawColor, highlightedSquares);
+
+            return null;
+        } catch (Exception e) {
+            return "Invalid square format: " + e.getMessage();
+        }
     }
 
     private chess.ChessPosition parsePosition(String pos) throws IllegalArgumentException {

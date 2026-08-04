@@ -3,18 +3,19 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import java.util.Collection;
 
 public class ChessBoardDraw {
 
     public ChessBoardDraw() {}
 
-    public static void draw(ChessGame game, String teamChoice) {
+    public static void draw(ChessGame game, String teamChoice, Collection<ChessPosition> highlightedSquares) {
         System.out.println("\n");
         ChessBoard board = game.getBoard();
         boolean isWhite = !teamChoice.equalsIgnoreCase("BLACK");
 
         drawHeadFoot(isWhite);
-        drawMainGrid(board, isWhite);
+        drawMainGrid(board, isWhite, highlightedSquares);
         drawHeadFoot(isWhite);
 
         System.out.print("\n");
@@ -39,7 +40,7 @@ public class ChessBoardDraw {
         clearLine();
     }
 
-    private static void drawMainGrid(ChessBoard board, boolean isWhite) {
+    private static void drawMainGrid(ChessBoard board, boolean isWhite, Collection<ChessPosition> highlightedSquares) {
         int startRow = isWhite ? 8 : 1;
         int endRow = isWhite ? 0 : 9;
         int rowStep = isWhite ? -1 : 1;
@@ -54,18 +55,25 @@ public class ChessBoardDraw {
             System.out.print(" " + row + " ");
 
             for (int col = startCol; col != endCol; col += colStep) {
-                boolean isLightSquare = (row + col) % 2 != 0;
-                if (isWhite) {
-                    isLightSquare = (row + col) % 2 == 1;
-                }
+                ChessPosition currentPos = new ChessPosition(row, col);
+                boolean isLightSquare = (row + col) % 2 == 1;
+                boolean isHighlighted = (highlightedSquares != null && highlightedSquares.contains(currentPos));
 
-                if (isLightSquare) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+                if (isHighlighted) {
+                    if (isLightSquare) {
+                        System.out.print(EscapeSequences.SET_BG_COLOR_GREEN);
+                    } else {
+                        System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                    }
                 } else {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                    if (isLightSquare) {
+                        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+                    } else {
+                        System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                    }
                 }
-
-                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                
+                ChessPiece piece = board.getPiece(currentPos);
                 printPieceCharacter(piece);
             }
 
@@ -108,9 +116,9 @@ public class ChessBoardDraw {
         chess.ChessGame testGame = new chess.ChessGame();
 
         System.out.println("=== Drawing White's Perspective ===");
-        draw(testGame, "WHITE");
+        draw(testGame, "WHITE", null);
 
         System.out.println("=== Drawing Black's Perspective ===");
-        draw(testGame, "BLACK");
+        draw(testGame, "BLACK", null);
     }
 }

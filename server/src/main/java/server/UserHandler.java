@@ -48,7 +48,7 @@ public class UserHandler {
             ctx.status(200);
             ctx.result(gson.toJson(result));
 
-        } catch (BadRequestException e) { // Catch the new 400 error (see Fix 2)
+        } catch (BadRequestException e) {
             ctx.status(400);
             ctx.result("{ \"message\": \"Error: bad request\" }");
         } catch (UnauthorizedException e) {
