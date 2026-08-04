@@ -10,6 +10,8 @@ public interface GameDAO {
     GameData getGame(int gameID) throws DataAccessException;
 
     void updateGame(int gameID, String username, String playerColor) throws DataAccessException;
+    
+    void updateGameState(int gameID, chess.ChessGame game) throws DataAccessException;
 
     void clearAllGameData() throws DataAccessException;
 }

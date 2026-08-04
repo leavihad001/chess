@@ -1,7 +1,9 @@
 package server.websocket;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import io.javalin.websocket.WsMessageContext;
 import org.eclipse.jetty.websocket.api.Session;
+import org.jetbrains.annotations.NotNull;
 import service.GameService;
 import model.AuthData;
 import model.GameData;
@@ -72,7 +74,51 @@ public class WebSocketHandler {
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws IOException {
-        //need to finish this
+        try {
+            AuthData auth = gameService.verifyAuth(command.getAuthToken());
+            String username = auth.username();
+
+            GameData gameData = gameService.getGame(command.getGameID());
+            chess.ChessGame game = gameData.game();
+
+            ChessGame.TeamColor playerColor = getTeamColor(username, gameData, game);
+
+            chess.ChessMove move = command.getMove();
+            var validMoves = game.validMoves(move.getStartPosition());
+            if (validMoves == null || !validMoves.contains(move)) {
+                throw new Exception("Illegal move: " + move);
+            }
+
+            game.makeMove(move);
+
+            gameService.updateGameState(gameData.gameID(), game);
+
+        } catch (Exception e) {
+            sendError(session, "Error: " + e.getMessage());
+        }
+    }
+
+    @NotNull
+    private static ChessGame.TeamColor getTeamColor(String username, GameData gameData, ChessGame game) throws Exception {
+        ChessGame.TeamColor playerColor = null;
+        if (username.equals(gameData.whiteUsername())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (username.equals(gameData.blackUsername())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        }
+
+        if (playerColor == null) {
+            throw new Exception("Observers cannot make moves.");
+        }
+        if (game.getTeamTurn() != playerColor) {
+            throw new Exception("It is not your turn.");
+        }
+        return playerColor;
+    }
+
+    private String formatPosition(chess.ChessPosition pos) {
+        char colChar = (char) ('a' + pos.getColumn() - 1);
+        return "" + colChar + pos.getRow();
     }
 
     private void leaveGame(UserGameCommand command, Session session) throws IOException {

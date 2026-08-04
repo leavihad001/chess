@@ -37,6 +37,21 @@ public class MemoryGameDAO implements GameDAO {
         games.put(gameID, updated);
     }
 
+    @Override
+    public void updateGameState(int gameID, ChessGame game) throws DataAccessException {
+        GameData currentGame = games.get(gameID);
+        if (currentGame != null) {
+            GameData updated = new GameData(
+                    currentGame.gameID(),
+                    currentGame.whiteUsername(),
+                    currentGame.blackUsername(),
+                    currentGame.gameName(),
+                    game
+            );
+            games.put(gameID, updated);
+        }
+    }
+
     public void clearAllGameData() throws DataAccessException {
         games.clear();
     }

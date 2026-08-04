@@ -73,4 +73,8 @@ public class GameService {
         }
         return game;
     }
+
+    public void updateGameState(int gameID, chess.ChessGame updatedGame) throws DataAccessException {
+        gameDAO.updateGameState(gameID, updatedGame);
+    }
 }
