@@ -1,25 +1,20 @@
 package ui;
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 public class ChessBoardDraw {
-    private static int row = 8;
 
-    public ChessBoardDraw(int row) {
-        ChessBoardDraw.row = row;
-    }
+    public ChessBoardDraw() {}
 
-    public static void draw(String teamChoice) {
+    public static void draw(ChessGame game, String teamChoice) {
         System.out.println("\n");
-
+        ChessBoard board = game.getBoard();
         boolean isWhite = !teamChoice.equalsIgnoreCase("BLACK");
 
-        if (isWhite) {
-            row = 8;
-        } else {
-            row = 1;
-        }
-
         drawHeadFoot(isWhite);
-        drawPieceGrid(isWhite);
+        drawMainGrid(board, isWhite);
         drawHeadFoot(isWhite);
 
         System.out.print("\n");
@@ -44,123 +39,63 @@ public class ChessBoardDraw {
         clearLine();
     }
 
-    private static void drawPieceGrid(boolean isWhite) {
-        keyPiecePrint(!isWhite, 0);
-        if (isWhite) {
-            row--;
-        } else {
-            row++;
-        }
-        pawnPiecePrint(!isWhite, 1);
-        if (isWhite) {
-            row--;
-        } else {
-            row++;
-        }
+    private static void drawMainGrid(ChessBoard board, boolean isWhite) {
+        int startRow = isWhite ? 8 : 1;
+        int endRow = isWhite ? 0 : 9;
+        int rowStep = isWhite ? -1 : 1;
 
-        drawMiddleGrid(isWhite);
+        int startCol = isWhite ? 1 : 8;
+        int endCol = isWhite ? 9 : 0;
+        int colStep = isWhite ? 1 : -1;
 
-        pawnPiecePrint(isWhite, 0);
-        if (isWhite) {
-            row--;
-        } else {
-            row++;
-        }
-        keyPiecePrint(isWhite, 1);
-        if (isWhite) {
-            row--;
-        } else {
-            row++;
-        }
-    }
-
-    private static void keyPiecePrint(boolean isWhite, int i) {
-        String[] bPieceCharsWhiteOrdered = {" ♜ ", " ♞ ", " ♝ ", " ♛ ", " ♚ ", " ♝ ", " ♞ ", " ♜ "};
-        String[] wPieceCharsWhiteOrdered = {" ♖ ", " ♘ ", " ♗ ", " ♕ ", " ♔ ", " ♗ ", " ♘ ", " ♖ "};
-
-        String[] wPieceCharsBlackOrdered = {" ♖ ", " ♘ ", " ♗ ", " ♔ ", " ♕ ", " ♗ ", " ♘ ", " ♖ "};
-        String[] bPieceCharsBlackOrdered = {" ♜ ", " ♞ ", " ♝ ", " ♚ ", " ♛ ",  " ♝ ", " ♞ ", " ♜ "};
-
-        System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.print(" " + row + " ");
-
-        for (int col = 0; col < 8; col++) {
-            if ((i + (col + 1)) % 2 == 0) {
-                System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-            } else {
-                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-            }
-            if (isWhite && i == 0) {
-                System.out.print(wPieceCharsBlackOrdered[col]);
-            } else if (isWhite && i == 1) {
-                System.out.print(wPieceCharsWhiteOrdered[col]);
-            } else if (!isWhite && i == 0) {
-                System.out.print(bPieceCharsWhiteOrdered[col]);
-            } else {
-                System.out.print(bPieceCharsBlackOrdered[col]);
-            }
-        }
-
-        System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.print(" " + row + " ");
-
-        clearLine();
-    }
-
-    private static void pawnPiecePrint(boolean isWhite, int i) {
-        System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.print(" " + row + " ");
-
-        for (int col = 0; col < 8; col++) {
-            if ((i + (col + 1)) % 2 == 0) {
-                System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-            } else {
-                System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-            }
-
-            if (isWhite) {
-                System.out.print(EscapeSequences.WHITE_PAWN);
-            } else {
-                System.out.print(EscapeSequences.BLACK_PAWN);
-            }
-        }
-
-        System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.print(" " + row + " ");
-
-        clearLine();
-    }
-
-    private static void drawMiddleGrid(boolean isWhite) {
-        for (int i = 0; i < 4; i++) {
+        for (int row = startRow; row != endRow; row += rowStep) {
             System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
             System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
             System.out.print(" " + row + " ");
 
-            for (int col = 0; col < 8; col++) {
-                if ((i + (col + 1)) % 2 == 0) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-                } else {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+            for (int col = startCol; col != endCol; col += colStep) {
+                boolean isLightSquare = (row + col) % 2 != 0;
+                if (isWhite) {
+                    isLightSquare = (row + col) % 2 == 1;
                 }
-                System.out.print(EscapeSequences.EMPTY);
+
+                if (isLightSquare) {
+                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+                } else {
+                    System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                }
+
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                printPieceCharacter(piece);
             }
+
             System.out.print(EscapeSequences.SET_BG_COLOR_BLUE);
             System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
             System.out.print(" " + row + " ");
 
             clearLine();
-
-            if (isWhite) {
-                row--;
-            } else {
-                row++;
-            }
         }
+    }
+
+    private static void printPieceCharacter(ChessPiece piece) {
+        if (piece == null) {
+            System.out.print(EscapeSequences.EMPTY);
+            return;
+        }
+
+        ChessGame.TeamColor color = piece.getTeamColor();
+        ChessPiece.PieceType type = piece.getPieceType();
+
+        String icon = switch (type) {
+            case KING -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KING : EscapeSequences.BLACK_KING;
+            case QUEEN -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_QUEEN : EscapeSequences.BLACK_QUEEN;
+            case BISHOP -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_BISHOP : EscapeSequences.BLACK_BISHOP;
+            case KNIGHT -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KNIGHT : EscapeSequences.BLACK_KNIGHT;
+            case ROOK -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_ROOK : EscapeSequences.BLACK_ROOK;
+            case PAWN -> color == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
+        };
+
+        System.out.print(icon);
     }
 
     private static void clearLine() {
@@ -170,10 +105,12 @@ public class ChessBoardDraw {
     }
 
     public static void main(String[] args) {
-        System.out.print("=== Drawing White's Perspective ===");
-        draw("WHITE");
+        chess.ChessGame testGame = new chess.ChessGame();
 
-        System.out.print("=== Drawing Blacks's Perspective ===");
-        draw("BLACK");
+        System.out.println("=== Drawing White's Perspective ===");
+        draw(testGame, "WHITE");
+
+        System.out.println("=== Drawing Black's Perspective ===");
+        draw(testGame, "BLACK");
     }
 }

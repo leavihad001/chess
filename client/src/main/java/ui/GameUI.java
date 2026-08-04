@@ -18,6 +18,7 @@ public class GameUI implements NotificationHandler {
     private final String playerColor;
     private WebSocketFacade wsFacade;
     private final Gson gson = new Gson();
+    private chess.ChessGame currentGame;
 
     public GameUI(String serverURL, String authToken, int gameID, String playerColor) {
         this.serverURL = serverURL;
@@ -60,9 +61,10 @@ public class GameUI implements NotificationHandler {
             case LOAD_GAME -> {
                 LoadGameMessage loadMsg = (LoadGameMessage) message;
                 System.out.println();
+                this.currentGame = loadMsg.getGame();
 
                 String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
-                ChessBoardDraw.draw(drawColor);
+                ChessBoardDraw.draw(currentGame, drawColor);
 
                 printUIHead();
             }
@@ -113,8 +115,12 @@ public class GameUI implements NotificationHandler {
     }
 
     private String redraw() {
-        String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
-        ChessBoardDraw.draw(drawColor);
+        if (currentGame != null) {
+            String drawColor = playerColor.equals("BLACK") ? "BLACK" : "WHITE";
+            ChessBoardDraw.draw(currentGame, drawColor);
+        } else {
+            System.out.println("No board state available yet.");
+        }
         return null;
     }
 

@@ -14,3 +14,4 @@ server/**/db.properties
 
 ### My Database Clear out ###
 /server/src/test/java/passoff/server/ClearTest.java
+/client/src/main/java/ui/OldChessBoardDraw.java
