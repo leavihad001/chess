@@ -46,7 +46,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(UserGameCommand command, Session session) throws IOException {
+    private void connect(UserGameCommand command, Session session) {
         try {
             AuthData auth = gameService.verifyAuth(command.getAuthToken());
             String username = auth.username();
@@ -76,7 +76,7 @@ public class WebSocketHandler {
 
     }
 
-    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
+    private void makeMove(MakeMoveCommand command, Session session) {
         try {
             AuthData auth = gameService.verifyAuth(command.getAuthToken());
             String username = auth.username();
@@ -90,29 +90,39 @@ public class WebSocketHandler {
 
             ChessGame.TeamColor playerColor = getTeamColor(username, gameData, game);
 
+            chess.ChessGame.TeamColor opponentColor = (playerColor == chess.ChessGame.TeamColor.WHITE)
+                    ? chess.ChessGame.TeamColor.BLACK : chess.ChessGame.TeamColor.WHITE;
+            String opponentName = (opponentColor == chess.ChessGame.TeamColor.WHITE)
+                    ? gameData.whiteUsername() : gameData.blackUsername();
+
             chess.ChessMove move = command.getMove();
             var validMoves = game.validMoves(move.getStartPosition());
             if (validMoves == null || !validMoves.contains(move)) {
-                throw new Exception("Illegal move: " + move);
+                if (game.isInCheck(opponentColor)) {
+                    throw new Exception("Illegal move: you are in check");
+                }
+                else {
+                    throw new Exception("Illegal move: not within scope");
+                }
             }
 
             game.makeMove(move);
 
+            if (game.isInCheckmate(opponentColor)) {
+                game.setGameOver(true);
+            } else if (game.isInStalemate(opponentColor)) {
+                game.setGameOver(true);
+            }
+
             gameService.updateGameState(gameData.gameID(), game);
 
             LoadGameMessage loadMessage = new LoadGameMessage(game);
-
             sessions.broadcast(gameData.gameID(), loadMessage, null);
 
             String moveDesc = String.format("%s moved from %s to %s.",
                     username, formatPosition(move.getStartPosition()), formatPosition(move.getEndPosition()));
             NotificationMessage noticeMessage = new NotificationMessage(moveDesc);
             sessions.broadcast(gameData.gameID(), noticeMessage, session);
-
-            chess.ChessGame.TeamColor opponentColor = (playerColor == chess.ChessGame.TeamColor.WHITE)
-                    ? chess.ChessGame.TeamColor.BLACK : chess.ChessGame.TeamColor.WHITE;
-            String opponentName = (opponentColor == chess.ChessGame.TeamColor.WHITE)
-                    ? gameData.whiteUsername() : gameData.blackUsername();
 
             if (game.isInCheckmate(opponentColor)) {
                 sessions.broadcast(gameData.gameID(),
@@ -153,7 +163,7 @@ public class WebSocketHandler {
         return "" + colChar + pos.getRow();
     }
 
-    private void leaveGame(UserGameCommand command, Session session) throws IOException {
+    private void leaveGame(UserGameCommand command, Session session) {
         try {
             AuthData auth = gameService.verifyAuth(command.getAuthToken());
             String username = auth.username();
@@ -177,7 +187,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void resignGame(UserGameCommand command, Session session) throws IOException {
+    private void resignGame(UserGameCommand command, Session session) {
         try {
             AuthData auth = gameService.verifyAuth(command.getAuthToken());
             String username = auth.username();

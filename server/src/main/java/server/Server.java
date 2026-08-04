@@ -35,7 +35,19 @@ public class Server {
         WebSocketHandler webSocketHandler = new WebSocketHandler(gameService);
 
         javalin.ws("/ws", ws -> {
+
+            ws.onConnect(ctx -> ctx.session.setIdleTimeout(java.time.Duration.ofMinutes(20)));
+
             ws.onMessage(webSocketHandler::handleMessage);
+
+            ws.onClose(ctx -> System.out.println("SERVER [DEBUG]: WebSocket closed -> Status: "
+                    + ctx.status() + ", Reason: " + ctx.reason()));
+
+            ws.onError(ctx -> {
+                assert ctx.error() != null;
+                System.err.println("SERVER [DEBUG]: WebSocket error -> "
+                        + ctx.error().getMessage());
+            });
         });
 
         javalin.delete("/db", clearHandler::clear);
