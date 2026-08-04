@@ -77,4 +77,8 @@ public class GameService {
     public void updateGameState(int gameID, chess.ChessGame updatedGame) throws DataAccessException {
         gameDAO.updateGameState(gameID, updatedGame);
     }
+
+    public void removePlayer(int gameID, String color) throws DataAccessException {
+        gameDAO.updateGame(gameID, null, color);
+    }
 }

@@ -95,7 +95,7 @@ public class GameUI implements NotificationHandler {
                 case "leave" -> leave();
                 case "redraw" -> redraw();
                 case "move" -> makeMove(params);
-                //need to add others (redraw, move, resign, highlight)
+                //need to add others (resign, highlight)
                 default -> help();
             };
         } catch (Exception e) {
@@ -125,8 +125,12 @@ public class GameUI implements NotificationHandler {
     }
 
     private String leave() {
-        //need to finish this notification part
-        return "leave";
+        try {
+            wsFacade.leaveGame(authToken, gameID);
+            return "leave";
+        } catch (Exception e) {
+            return "Error leaving game: " + e.getMessage();
+        }
     }
 
     private String makeMove(String[] params) {

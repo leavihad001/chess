@@ -27,6 +27,9 @@ public class WebSocketHandler {
     public void handleMessage(WsMessageContext ctx) {
         try {
             String json = ctx.message();
+
+            System.out.println("SERVER RECEIVED RAW JSON: " + json);
+
             UserGameCommand baseCommand = gson.fromJson(json, UserGameCommand.class);
 
             switch (baseCommand.getCommandType()) {
@@ -93,6 +96,31 @@ public class WebSocketHandler {
 
             gameService.updateGameState(gameData.gameID(), game);
 
+            LoadGameMessage loadMessage = new LoadGameMessage(game);
+
+            sessions.broadcast(gameData.gameID(), loadMessage, null);
+
+            String moveDesc = String.format("%s moved from %s to %s.",
+                    username, formatPosition(move.getStartPosition()), formatPosition(move.getEndPosition()));
+            NotificationMessage noticeMessage = new NotificationMessage(moveDesc);
+            sessions.broadcast(gameData.gameID(), noticeMessage, session);
+
+            chess.ChessGame.TeamColor opponentColor = (playerColor == chess.ChessGame.TeamColor.WHITE)
+                    ? chess.ChessGame.TeamColor.BLACK : chess.ChessGame.TeamColor.WHITE;
+            String opponentName = (opponentColor == chess.ChessGame.TeamColor.WHITE)
+                    ? gameData.whiteUsername() : gameData.blackUsername();
+
+            if (game.isInCheckmate(opponentColor)) {
+                sessions.broadcast(gameData.gameID(),
+                        new NotificationMessage(opponentName + " is in checkmate!"), null);
+            } else if (game.isInCheck(opponentColor)) {
+                sessions.broadcast(gameData.gameID(),
+                        new NotificationMessage(opponentName + " is in check!"), null);
+            } else if (game.isInStalemate(opponentColor)) {
+                sessions.broadcast(gameData.gameID(),
+                        new NotificationMessage("Game ended in stalemate!"), null);
+            }
+
         } catch (Exception e) {
             sendError(session, "Error: " + e.getMessage());
         }
@@ -122,7 +150,27 @@ public class WebSocketHandler {
     }
 
     private void leaveGame(UserGameCommand command, Session session) throws IOException {
-        //need to finish this
+        try {
+            AuthData auth = gameService.verifyAuth(command.getAuthToken());
+            String username = auth.username();
+
+            GameData gameData = gameService.getGame(command.getGameID());
+
+            sessions.removeSession(gameData.gameID(), session);
+
+            if (username.equals(gameData.whiteUsername())) {
+                gameService.removePlayer(gameData.gameID(), "WHITE");
+            } else if (username.equals(gameData.blackUsername())) {
+                gameService.removePlayer(gameData.gameID(), "BLACK");
+            }
+            
+            String noticeText = String.format("%s left the game.", username);
+            NotificationMessage noticeMessage = new NotificationMessage(noticeText);
+            sessions.broadcast(gameData.gameID(), noticeMessage, null);
+
+        } catch (Exception e) {
+            sendError(session, "Error: " + e.getMessage());
+        }
     }
 
     private void resignGame(UserGameCommand command, Session session) throws IOException {
