@@ -84,6 +84,10 @@ public class WebSocketHandler {
             GameData gameData = gameService.getGame(command.getGameID());
             chess.ChessGame game = gameData.game();
 
+            if (game.isGameOver()) {
+                throw new Exception("You cannot make a move because the game is already over.");
+            }
+
             ChessGame.TeamColor playerColor = getTeamColor(username, gameData, game);
 
             chess.ChessMove move = command.getMove();
@@ -163,7 +167,7 @@ public class WebSocketHandler {
             } else if (username.equals(gameData.blackUsername())) {
                 gameService.removePlayer(gameData.gameID(), "BLACK");
             }
-            
+
             String noticeText = String.format("%s left the game.", username);
             NotificationMessage noticeMessage = new NotificationMessage(noticeText);
             sessions.broadcast(gameData.gameID(), noticeMessage, null);
@@ -174,7 +178,31 @@ public class WebSocketHandler {
     }
 
     private void resignGame(UserGameCommand command, Session session) throws IOException {
-        //need to finish this
+        try {
+            AuthData auth = gameService.verifyAuth(command.getAuthToken());
+            String username = auth.username();
+
+            GameData gameData = gameService.getGame(command.getGameID());
+            chess.ChessGame game = gameData.game();
+
+            if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
+                throw new Exception("Observers cannot resign from the game.");
+            }
+
+            if (game.isGameOver()) {
+                throw new Exception("The game is already over.");
+            }
+
+            game.setGameOver(true);
+            gameService.updateGameState(gameData.gameID(), game);
+
+            String noticeText = String.format("%s resigned from the game.", username);
+            NotificationMessage noticeMessage = new NotificationMessage(noticeText);
+            sessions.broadcast(gameData.gameID(), noticeMessage, null);
+
+        } catch (Exception e) {
+            sendError(session, "Error: " + e.getMessage());
+        }
     }
 
     private void sendError(Session session, String errorMessage) {

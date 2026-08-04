@@ -1,5 +1,4 @@
 package ui;
-import com.google.gson.Gson;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import websocket.messages.ErrorMessage;
@@ -17,7 +16,6 @@ public class GameUI implements NotificationHandler {
     private final int gameID;
     private final String playerColor;
     private WebSocketFacade wsFacade;
-    private final Gson gson = new Gson();
     private chess.ChessGame currentGame;
 
     public GameUI(String serverURL, String authToken, int gameID, String playerColor) {
@@ -92,10 +90,11 @@ public class GameUI implements NotificationHandler {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
             return switch (cmd) {
-                case "leave" -> leave();
                 case "redraw" -> redraw();
+                case "leave" -> leave();
                 case "move" -> makeMove(params);
-                //need to add others (resign, highlight)
+                case "resign" -> resign();
+                //need to add others (highlight)
                 default -> help();
             };
         } catch (Exception e) {
@@ -154,6 +153,23 @@ public class GameUI implements NotificationHandler {
         } catch (Exception e) {
             return "Invalid move format: " + e.getMessage();
         }
+    }
+
+    private String resign() {
+        System.out.print("Are you sure you want to resign? (yes/no): ");
+        Scanner scanner = new Scanner(System.in);
+        String confirm = scanner.nextLine().trim().toLowerCase();
+
+        if (confirm.equals("yes") || confirm.equals("y")) {
+            try {
+                wsFacade.resignGame(authToken, gameID);
+            } catch (Exception e) {
+                return "Error resigning: " + e.getMessage();
+            }
+        } else {
+            System.out.println("Resignation cancelled.");
+        }
+        return null;
     }
 
     private chess.ChessPosition parsePosition(String pos) throws IllegalArgumentException {
